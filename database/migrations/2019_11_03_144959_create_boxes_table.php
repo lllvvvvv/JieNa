@@ -17,8 +17,8 @@ class CreateBoxesTable extends Migration
             $table->bigIncrements('id');
             $table->integer('unit_id');
             $table->integer('order_id');
-            $table->integer('box_type');
-            $table->boolean('status');
+            $table->integer('box_type')->default(0);
+            $table->boolean('status')->default(0);
             $table->timestamps();
         });
     }

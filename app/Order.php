@@ -16,4 +16,8 @@ class Order extends Model
     public function Boxes() {
         return $this->hasMany('App\Box');
     }
+
+    public function User() {
+        return $this->belongsTo('App\User','user_id','id');
+    }
 }

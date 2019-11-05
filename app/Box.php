@@ -9,7 +9,6 @@ class Box extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $fillable = ['status','unit_id','box_type'];
-    public $timestamps = false;
 
     public function Unit()
     {

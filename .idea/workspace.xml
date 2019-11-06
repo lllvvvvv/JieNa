@@ -2,17 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="014a2fa3-741f-47af-a739-3658011888bf" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Services/OrderService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Services/PriceService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Box.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Box.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Helpers/Helpers.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Helpers/Helpers.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/OrderController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/OrderController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Order.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Order.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2014_10_12_000000_create_users_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2014_10_12_000000_create_users_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/TestController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/TestController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/UnitController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/UnitController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/BoxService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/BoxService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_02_224957_create_orders_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_02_224957_create_orders_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_03_144959_create_boxes_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_03_144959_create_boxes_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_04_110143_create_box_type_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_04_110143_create_box_type_table.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -174,7 +172,7 @@
       <workItem from="1572830888329" duration="22062000" />
       <workItem from="1572921664529" duration="1259000" />
       <workItem from="1572925041642" duration="79000" />
-      <workItem from="1572925164386" duration="13152000" />
+      <workItem from="1572925164386" duration="32187000" />
     </task>
     <servers />
   </component>

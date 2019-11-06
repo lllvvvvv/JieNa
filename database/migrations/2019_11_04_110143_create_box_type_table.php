@@ -14,7 +14,8 @@ class CreateBoxTypeTable extends Migration
     public function up()
     {
         Schema::create('box_type', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->integer('box_type');
+            $table->integer('price');
             $table->timestamps();
         });
     }

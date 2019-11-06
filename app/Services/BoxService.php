@@ -9,7 +9,7 @@ class BoxService
     //根据需要更改箱子状态
     public function UnitBoxes($amount,$unit_id)
     {
-        $boxes = Unit::find($unit_id,'id')->Boxes()->get();
+        $boxes = Unit::find($unit_id,'id')->Boxes()->where('status',0)->get();
         $boxId = array();
         foreach ($boxes as $box)
         {
@@ -23,5 +23,7 @@ class BoxService
         }
         return $boxId;
     }
+
+
 }
 

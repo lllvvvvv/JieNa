@@ -4,18 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Unit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UnitController extends Controller
 {
     public function getUnits()
     {
         $units = Unit::all();
-        $info = array();
-        foreach ($units as $unit)
-        {
-            $info[$unit->name] = [['type'=>1,'count' =>$unit->Boxes()->where('box_type',1)->count()],
-                ['type'=>2,'count' =>$unit->Boxes()->where('box_type',2)->count()]];
-        }
-        return response()->json($info);
+        $result = $units->map(function ($value){
+            return ['unityName'=>$value->name,
+                'box'=>DB::table('boxes')->select('box_type',DB::raw('count(*) as box_count'))
+                    ->where('unit_id',$value->id)
+                    ->groupBy('box_type')
+                    ->get()];
+        });
+        return $result;
     }
 }

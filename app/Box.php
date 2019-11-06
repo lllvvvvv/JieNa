@@ -20,5 +20,9 @@ class Box extends Model
         return $this->belongsTo('App\Order');
     }
 
+    public function Price()
+    {
+        return $this->hasOne('App\BoxType','box_type','box_type');
+    }
 
 }

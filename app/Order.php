@@ -20,4 +20,9 @@ class Order extends Model
     public function User() {
         return $this->belongsTo('App\User','user_id','id');
     }
+
+    public function Unit()
+    {
+        return $this->belongsTo('App\Unit','unit_id','id');
+    }
 }

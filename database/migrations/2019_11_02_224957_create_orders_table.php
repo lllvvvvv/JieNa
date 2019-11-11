@@ -19,6 +19,7 @@ class CreateOrdersTable extends Migration
             $table->integer('user_id');
             $table->integer('status');
             $table->integer('price');
+            $table->integer('unit_id');
             $table->char('home_address')->nullable();
             $table->char('arrive_address')->nullable();
             $table->timestamp('get_time')->nullable();

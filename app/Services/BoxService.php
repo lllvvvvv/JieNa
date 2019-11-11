@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Box;
 use App\Unit;
+use Illuminate\Support\Facades\DB;
 
 class BoxService
 {
@@ -22,6 +23,15 @@ class BoxService
             $box->update(['status'=>1,'unit_id'=>null]);
         }
         return $boxId;
+    }
+
+    public function Boxes($order_id)
+    {
+        $result = DB::table('boxes')->select('box_type',DB::raw('count(*) as box_count'))
+            ->where('order_id',$order_id)
+            ->groupBy('box_type')
+            ->get();
+        return $result;
     }
 
 

@@ -12,4 +12,9 @@ class Unit extends Model
     {
         return $this->hasMany('App\Box','unit_id');
     }
+
+    public function Orders()
+    {
+        return $this->hasOne('App\Order','unit_id');
+    }
 }

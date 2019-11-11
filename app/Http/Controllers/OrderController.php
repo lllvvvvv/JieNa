@@ -32,6 +32,7 @@ class OrderController extends Controller
         $order->status = $request->status;
         $order->arrive_address = $request->arriveAddress;
         $order->arrive_time = $request->arriveTime;
+        $order->unit_id = $request->unitId;
         $order->save();
         $boxes = new BoxService();
         $boxes = $boxes->UnitBoxes($request->boxCount,$request->unitId);
@@ -57,6 +58,7 @@ class OrderController extends Controller
                 ->groupBy('box_type')
                 ->get(),
                 'get_time' => $value->get_time,'createTime'=>$value->created_at->toDateTimeString(),
+                'pay_time' => $value->pay_time,
                 'status' => $value->status,
                 'price'=> $price];
         });
@@ -72,6 +74,28 @@ class OrderController extends Controller
         return response()->json(['billNo' =>$order->billno, 'boxCount'=>$box_count,'userName'=>$user->name,'arriveAdress'=>$order->home_address,'phone'=>$user->phone]);
     }
 
+    public function finishOrder(Request $request)
+    {
+        $user = $request->user()->Admin()->first();
+        $order = Order::where('billno','=',$request->orderId);
+        $order->update(['admin_id'=>$user->id]);
+        $boxes = $order->first()->Boxes()->get();
+        foreach ($boxes as $box) {
+            $box->Order()->dissociate();
+            $box->unit_id = $user->unit_id;
+            $box->status = 0;
+            $box->save();
+        }
+        return response()->json(['code'=>200,'message'=>'还箱完成,订单完成']);
+    }
 
+    public function uploadAddress(Request $request)
+    {
+        $order = Order::where('billno','=',$request->orderId)->update(['home_address'=>$request->address,'status'=>4]);
+        return response()->json([
+            'code'=>200,
+            'message'=>'order status update'
+        ]);
+    }
 
 }

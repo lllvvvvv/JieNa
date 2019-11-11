@@ -2,15 +2,27 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="014a2fa3-741f-47af-a739-3658011888bf" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/app/Services/PriceService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jiena.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jiena.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Box.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Box.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AlipayController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AlipayController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/OrderController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/OrderController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/TestController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/TestController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/UnitController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/UnitController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Kernel.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Kernel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Order.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Order.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Packages/aop/AopEncrypt.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Packages/aop/AopEncrypt.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/AlipayService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/AlipayService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/BoxService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/BoxService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Unit.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Unit.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/User.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/alipay.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/alipay.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/filesystems.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/filesystems.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_02_195249_create_admin_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_02_195249_create_admins_table.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_02_224957_create_orders_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_02_224957_create_orders_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_04_110143_create_box_type_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_04_110143_create_box_type_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_03_144959_create_boxes_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_03_144959_create_boxes_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -114,6 +126,13 @@
       <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-docblock" />
       <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-common" />
       <path value="$PROJECT_DIR$/vendor/nunomaduro/collision" />
+      <path value="$PROJECT_DIR$/vendor/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/vendor/yansongda/supports" />
+      <path value="$PROJECT_DIR$/vendor/yansongda/pay" />
+      <path value="$PROJECT_DIR$/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-message" />
     </include_path>
   </component>
   <component name="ProjectId" id="1Sx3jFUWoIzHijReULSGsk3UvGR" />
@@ -134,6 +153,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/storage/app/AlikEY" />
       <recent name="$PROJECT_DIR$/app" />
       <recent name="$PROJECT_DIR$/app/Packages" />
       <recent name="$PROJECT_DIR$" />
@@ -172,7 +192,12 @@
       <workItem from="1572830888329" duration="22062000" />
       <workItem from="1572921664529" duration="1259000" />
       <workItem from="1572925041642" duration="79000" />
-      <workItem from="1572925164386" duration="32187000" />
+      <workItem from="1572925164386" duration="33304000" />
+      <workItem from="1573093934979" duration="17449000" />
+      <workItem from="1573179318592" duration="3000000" />
+      <workItem from="1573185069506" duration="12196000" />
+      <workItem from="1573209442379" duration="5675000" />
+      <workItem from="1573436922212" duration="16624000" />
     </task>
     <servers />
   </component>

@@ -28,6 +28,5 @@ class TestController extends Controller
 //        $test->timeDifference(null);
 //        return response()->file(storage_path(). '/app/aliKey/file.txt');
 
-        $user = User::where('phone','=',$request->phone)->update(['alipay_token' =>'asfasdf','ali_uid'=>'asdfasf']);
     }
 }

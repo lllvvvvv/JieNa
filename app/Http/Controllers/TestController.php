@@ -27,6 +27,7 @@ class TestController extends Controller
 //        $test = new PriceService();
 //        $test->timeDifference(null);
 //        return response()->file(storage_path(). '/app/aliKey/file.txt');
-
+        $unit = Order::where('billno',$request->order)->first()->Unit()->first();
+        dd($unit->address);
     }
 }

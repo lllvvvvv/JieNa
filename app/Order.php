@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
+
+    //order状态  1:送货上门 2:自提 3:已提未支付 4:待上门回收 5:支付完成 6:废订单 7:下单未授权，等待授权
     protected $primaryKey = 'id';
     protected $fillable = ['user_id','billno','status','arrive_address','arrive_time','unit_id','price'];
 

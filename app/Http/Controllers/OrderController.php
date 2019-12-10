@@ -26,7 +26,7 @@ class OrderController extends Controller
     {
         if ($request->boxes==null)
         {
-            return response()->json(['code'=>'500','message'=>'箱体不足']);
+            return response()->json(['code'=>'500','message'=>'箱体参数不全']);
         }
         $user_id = $request->user()->id;
         $order = Order::create(['user_id'=>$user_id,'billno'=>Helpers::generateBillNo(),
@@ -39,15 +39,11 @@ class OrderController extends Controller
         if ($enough=='error')
         {
             return response()->json(['code'=>'JN001','message'=>'下单失败']);
-
         }
         $rentbox = $boxes->RentBoxes($request->unitId,$request->boxes,$order->id);
 
-        //冻结资金
-        $flow = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$order->billno,'type'=>1,'price'=>300]);
         $freeze = new AlipayService();
-       $flow_id = strval($flow->flow_id) . '1';
-        $result = $freeze->freeze($flow_id,$flow->billno);
+        $result = $freeze->freeze($order->billno);
         return response()->json(['code'=>200,'message'=>'下单成功','ali'=>$result]);
     }
 

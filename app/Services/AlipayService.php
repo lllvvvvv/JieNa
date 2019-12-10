@@ -2,7 +2,10 @@
 namespace App\Services;
 use AlipaySystemOauthTokenRequest;
 use AopCertClient;
+use App\Helpers\Helpers;
 use App\Http\Middleware\EncryptCookies;
+use App\Order;
+use App\OrdersFlow;
 use App\User;
 use http\Env\Request;
 use AopClient;
@@ -69,21 +72,25 @@ class AlipayService
         return $result;
     }
 
-    public function freeze($flow_id,$billno)
+    public function freeze($order)
     {
+        $flow_id = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$order,'type'=>1,'price'=>300]); //生成流水号
+        $unit = Order::where('billno',$order)->first()->Unit()->first();
+        $boxes = Helpers::getBoxes($order);
+        $price = PriceService::getBoxDeposit($boxes);
         $request = new \AlipayFundAuthOrderAppFreezeRequest();
         $request->setNotifyUrl("https://www.go2020.cn/api/notify");
         $t = "{" .
-            "\"out_order_no\": \"$billno\"," .
+            "\"out_order_no\": \"$order\"," .
             "\"out_request_no\":\"$flow_id\"," .
             "\"order_title\":\"预授权冻结\"," .
-            "\"amount\":0.01," .
+            "\"amount\":$price," .
             "\"product_code\":\"PRE_AUTH_ONLINE\"," .
             "\"payee_logon_id\":\"c17798521228@126.com\"," .
-            "\"extra_param\":\"{\\\"category\\\":\\\"RENT_LUGGAGE\\\",\\\"outStoreCode\\\":\\\"charge001\\\",\\\"outStoreAlias\\\":\\\"充电桩北京路\\\"}\"," .
+            "\"extra_param\":\"{\\\"category\\\":\\\"RENT_LUGGAGE\\\",\\\"outStoreCode\\\":\\\"unit.$order->unit_id\\\",\\\"outStoreAlias\\\":\\\"$unit->address\\\"}\"," . //charge001
 //            "\"pay_timeout\":\"2d\"" .
 //            "\"scene_code\":\"OVERSEAS_ONLINE_AUTH_COMMON_SCENE\"" .
-            "\"enable_pay_channels\":\"[{\\\"payChannelType\\\":\\\"CREDITZHIMA\\\"},{\\\"payChannelType\\\":\\\"MONEY_FUND\\\"}]\"" .
+            "\"enable_pay_channels\":\"[{\\\"payChannelType\\\":\\\"CREDITZHIMA\\\"},{\\\"payChannelType\\\":\\\"MONEY_FUND\\\"},{\\\"payChannelType\\\":\\\"PCREDIT_PAY\\\"}]\"" .
 //            "\"identity_params\":\"{\\\"identity_hash\\\":\\\"ABCDEFDxxxxxx\\\",\\\"alipay_user_id\\\":\\\"2088xxx\\\"}\"" .
             "}";
         $request->setBizContent($t);

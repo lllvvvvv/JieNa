@@ -1,6 +1,8 @@
 <?php
 namespace App\Services;
 
+use App\Box;
+use App\BoxType;
 use App\Order;
 use Carbon\Carbon;
 
@@ -81,6 +83,20 @@ class PriceService
         }
         $target = ceil($hour/4);
         return $target;
+    }
+
+
+    //获取箱体押金总和
+    public static function getBoxDeposit($boxes)
+    {
+        $price = 0;
+        foreach ($boxes as $box)
+        {
+            $deposit = BoxType::where('box_type',$box['box_type'])->first()->deposit;
+            $deposit = $deposit*$box['box_count'];
+            $price += $deposit;
+        }
+        return $price;
     }
 
 }

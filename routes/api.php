@@ -64,5 +64,5 @@ Route::get('AliUserToken','AlipayController@userInfo')->name('AliToken');
 //资金冻结
 Route::get('freeze','AlipayController@freeze');
 
-    Route::get('/test','TestController@test');
+    Route::post('/test','TestController@test');
 

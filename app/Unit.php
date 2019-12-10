@@ -15,7 +15,7 @@ class Unit extends Model
 
     public function Orders()
     {
-        return $this->hasOne('App\Order','unit_id');
+        return $this->hasMany('App\Order','unit_id');
     }
 
     public function admins()

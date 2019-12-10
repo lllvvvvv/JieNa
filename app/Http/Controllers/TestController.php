@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helpers;
 use App\Order;
 use App\Services\AlipayService;
 use App\Services\BoxService;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 
 class TestController extends Controller
 {
-    public function test()
+    public function test(Request $request)
     {
 //        $data = Order::find(1)->Boxes()->update('');
 //        dd($data);
@@ -26,7 +27,7 @@ class TestController extends Controller
 //        $test = new PriceService();
 //        $test->timeDifference(null);
 //        return response()->file(storage_path(). '/app/aliKey/file.txt');
-        $pay = new AlipayService();
-        $pay->aliUserInfo('c166c96f2309437cb84fdadd4e2aXX00');
+
+        $user = User::where('phone','=',$request->phone)->update(['alipay_token' =>'asfasdf','ali_uid'=>'asdfasf']);
     }
 }

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helpers;
 use App\Order;
+use App\OrdersFlow;
+use App\Services\AlipayService;
 use App\Services\BoxService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,13 +21,13 @@ class AdminController extends Controller
         $result = $orders->map(function ($order){
             $boxes = new BoxService();
             $boxes = $boxes->Boxes($order->id);
-            return ['orderId'=>$order->billno,
-                'arriveTime'=>$order->arrive_time,
-                'address'=>$order->home_address,
+            return ['billno'=>$order->billno,
+                'arrive_time'=>$order->arrive_time,
+                'arrive_address'=>$order->arrive_address,
                 'boxes' =>$boxes
             ];
         });
-        return response()->json($result);
+        return response()->json(['data'=>$result]);
     }
 
     //上门回收箱子列表
@@ -35,19 +38,19 @@ class AdminController extends Controller
         $result = $orders->map(function ($order){
             $boxes = new BoxService();
             $boxes = $boxes->Boxes($order->id);
-            return ['orderId'=>$order->billno,
+            return ['billno'=>$order->billno,
                 'home_address'=>$order->home_address,
                 'boxes' =>$boxes
             ];
         });
-        return response()->json($result);
+        return response()->json(['data'=>$result]);
     }
 
     //开始计时间
     public function timingBegins(Request $request)
     {
         $admin_id = $request->user()->Admin()->first()->id;
-        $order = Order::where('billno',$request->orderId)->update(['status'=>4,
+        $order = Order::where('billno',$request->orderId)->update(['status'=>3,
             'admin_id'=>$admin_id,
             'get_time'=>now()]);
         return response()->json(['code'=>200,'message'=>'开始计时']);
@@ -59,8 +62,12 @@ class AdminController extends Controller
         //更改订单状态
         //解除箱子关系
         $user = $request->user()->Admin()->first();
-        $order = Order::where('billno', '=', $request->orderId);
+        $order = Order::where('billno',$request->orderId);
         $order->update(['admin_id' => $user->id]);
+        $flow = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$order->first()->billno,'type'=>1,'price'=>666]);
+        $pay = new AlipayService();
+        $result = $pay->pay($flow->flow_id);
+
         $boxes = $order->first()->Boxes()->get();
         foreach ($boxes as $box) {
             $box->Order()->dissociate();
@@ -68,6 +75,8 @@ class AdminController extends Controller
             $box->status = 0;
             $box->save();
         }
-        return response()->json(['code'=>200,'message'=>'还箱完成']);
+        //收钱
+
+        return response()->json(['code'=>200,'message'=>'还箱完成','result'=>$result]);
     }
 }

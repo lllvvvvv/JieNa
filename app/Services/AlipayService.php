@@ -6,7 +6,7 @@ use App\Http\Middleware\EncryptCookies;
 use App\User;
 use http\Env\Request;
 use AopClient;
-use Yansongda\Pay\Log;
+use Illuminate\Support\Facades\Log;
 
 class AlipayService
 {
@@ -37,37 +37,77 @@ class AlipayService
         $c->format = "json";
         $c->charset= "UTF-8";
         $c->signType= "RSA2";
+        $c->notify_url = "https://www.go2020.cn/api/notify";
         $c->alipayrsaPublicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk5FVysZl1m+zFPLnTdVHD9tTsQL0JR9xGkMwpDUSnteECN7nMx3P4rKQEQgTg3GYz9ka5OvwUhf7rLGW1qsCpnfWOkmu5UZQXuzV9Exlr5HRxz9JLRJWrIhVONDqR/xniD5jYvFmvGao44xN3QcatYRNcw8mKu9g9JW0yhiIA7GKrj4Mwj2+Hy0t2jrCguc6qzBSz8jxFzpysOuYUB5k1RnTygwBX+jfiU/S0STaZC3yst/1aXZwEOknzpGnSczeBXidhqN74tH++w+CKt3DxYBESvuNKwkBDfVwgNDAuvyb1HpCSZ2133hUDZJReM21gE66vhd8KA4CLXhWY11POwIDAQAB';
         $this->c = $c;
     }
 
-    public function aliUserInfo($code) //查看用户token
+    public function aliUserInfo($code,$phone,$uid) //查看用户token
     {
         $request = new AlipaySystemOauthTokenRequest();
         $request->setGrantType("authorization_code");
         $request->setCode($code);
         $result = $this->c->execute( $request);
         $responseNode = str_replace(".", "_", $request->getApiMethodName()) . "_response";
-        if (User::where('api_token','=',$result->$responseNode->access_token)->exists())
+        if (User::where('alipay_token','=',$result->$responseNode->access_token)->exists())
         {
             return $result;
         }
-        $user = new User;
-        $user->api_token = $result->$responseNode->access_token;
-        $user->save();
+        $user = User::where('phone','=',$phone)->update(['alipay_token' =>$result->$responseNode->access_token,'ali_uid'=>$result->alipay_system_oauth_token_response->user_id]);
         return $result;
     }
 
     public function decryptData( $encryptedData)
     {
-        Log::info('asdfgadsfdsf');
         $key = 'yFNAgaC7yE8AZhE/jNopkw=='; //小程序应用AES密钥
         $aeskey = base64_decode($key);
         $iv = 0;
         $aesIv = base64_decode($iv);
         $aesCipher = base64_decode($encryptedData);
         $result = openssl_decrypt($aesCipher,"AES-128-CBC",$aeskey,1,$aesIv);
+        Log::info($result);
         return $result;
-
     }
+
+    public function freeze($flow_id,$billno)
+    {
+        $request = new \AlipayFundAuthOrderAppFreezeRequest();
+        $request->setNotifyUrl("https://www.go2020.cn/api/notify");
+        $t = "{" .
+            "\"out_order_no\": \"$billno\"," .
+            "\"out_request_no\":\"$flow_id\"," .
+            "\"order_title\":\"预授权冻结\"," .
+            "\"amount\":0.01," .
+            "\"product_code\":\"PRE_AUTH_ONLINE\"," .
+            "\"payee_logon_id\":\"c17798521228@126.com\"," .
+            "\"extra_param\":\"{\\\"category\\\":\\\"RENT_LUGGAGE\\\",\\\"outStoreCode\\\":\\\"charge001\\\",\\\"outStoreAlias\\\":\\\"充电桩北京路\\\"}\"," .
+//            "\"pay_timeout\":\"2d\"" .
+//            "\"scene_code\":\"OVERSEAS_ONLINE_AUTH_COMMON_SCENE\"" .
+            "\"enable_pay_channels\":\"[{\\\"payChannelType\\\":\\\"CREDITZHIMA\\\"},{\\\"payChannelType\\\":\\\"MONEY_FUND\\\"}]\"" .
+//            "\"identity_params\":\"{\\\"identity_hash\\\":\\\"ABCDEFDxxxxxx\\\",\\\"alipay_user_id\\\":\\\"2088xxx\\\"}\"" .
+            "}";
+        $request->setBizContent($t);
+        $result = $this->c->sdkExecute( $request);
+        return $result;
+    }
+
+    public function pay($flow_id)
+    {
+        $request = new \AlipayTradePayRequest();
+        $request->setNotifyUrl("https://www.go2020.cn/api/notify");
+        $request->setBizContent("{" .
+            "\"out_trade_no\":\"$flow_id\"," .
+            "\"product_code\":\"PRE_AUTH_ONLINE\",".
+            "\"auth_no\":\"2019120910002001000556705151\"," .
+            "\"subject\":\"预授权转支付测试\"," .
+            "\"buyer_id\":\"2088422444839000\"," .
+            "\"seller_id\":\"2088631770405887\"," .
+            "\"total_amount\":\"0.01\",".
+            "\"store_id\":\"charge001\",".
+            "\"auth_confirm_mode\":\"COMPLETE\"".
+            "  }");
+        $result = $this->c->execute($request);
+        return $result;
+    }
+
 }

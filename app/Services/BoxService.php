@@ -4,25 +4,33 @@ namespace App\Services;
 use App\Box;
 use App\Unit;
 use Illuminate\Support\Facades\DB;
+use Yansongda\Pay\Log;
 
 class BoxService
 {
-    //根据需要更改箱子状态
-    public function UnitBoxes($amount,$unit_id)
+    //判断箱子数量是否够
+    public function BoxCount($unit_id,$boxes)
     {
-        $boxes = Unit::find($unit_id,'id')->Boxes()->where('status',0)->get();
-        $boxId = array();
+        foreach ($boxes as $box) {
+            $result = Unit::find($unit_id, 'id')->Boxes()->where('status', 0)->where('box_type', $box['box_type'])->get();
+            if ($result->count() < $box['box_count'])
+            {
+                Log::info($result->count());
+                return 'error';
+            }
+        }
+    }
+
+    public function RentBoxes($unit_id,$boxes,$order_id)
+    {
         foreach ($boxes as $box)
         {
-            if ($amount == 0)
-            {
-                break;
-            }
-            $amount--;
-            array_push($boxId,$box->id);
-            $box->update(['status'=>1,'unit_id'=>null]);
+            $result = DB::table('boxes')->where('unit_id',$unit_id)
+                ->where('status',0)
+                ->where('box_type',$box['box_type'])
+                ->take($box['box_count'])
+                ->update(['unit_id'=>0,'order_id'=>$order_id,'status'=>1]);
         }
-        return $boxId;
     }
 
     public function Boxes($order_id)
@@ -32,6 +40,11 @@ class BoxService
             ->groupBy('box_type')
             ->get();
         return $result;
+    }
+
+    public function distribute($boxes)
+    {
+
     }
 
 

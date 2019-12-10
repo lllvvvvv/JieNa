@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $primaryKey = 'id';
-    protected $fillable = ['id'];
+    protected $fillable = ['user_id','billno','status','arrive_address','arrive_time','unit_id','price'];
 
 //    public function Boxs() {
 //        return $this->belongsToMany('App\Box','order_box','order_id','box_id');

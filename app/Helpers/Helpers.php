@@ -24,4 +24,10 @@ class Helpers{
         return 'JYB' . date("YmdHis");
     }
 
+    public static function generateFlowNo()
+    {
+        return 'FLOW' . date("YmdHis");
+    }
+
+
 }

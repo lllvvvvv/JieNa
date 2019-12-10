@@ -4,14 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Box;
 use App\Helpers\Helpers;
+use App\Http\Requests\NewOrderRequest;
 use App\Order;
+use App\OrdersFlow;
+use App\Services\AlipayService;
 use App\Services\BoxService;
 use App\Services\PriceService;
 use App\User;
 use Cassandra\Date;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+
 use function MongoDB\BSON\toJSON;
 use function Symfony\Component\Console\Tests\Command\createClosure;
 
@@ -19,38 +22,44 @@ class OrderController extends Controller
 {
     //order状态  1:送货上门 2:自提 3:已提未支付 4:待上门回收 5:支付完成 6:废订单
 
-    public function newOrder(Request $request)
+    public function newOrder(NewOrderRequest $request)
     {
-        //生成二维码，传 user_id boxcount unit_id参数
-        //读取unit剩下的箱子，随机分配箱子
-        //管理员扫描二维码 获取管理员token 修改 Order:: status admin_id 开始计时间
-
-        $user_id = $request->user()->id;
-        $order = new Order();
-        $order->user_id = $user_id;
-        $order->billno = Helpers::generateBillNo();
-        $order->status = $request->status;
-        $order->arrive_address = $request->arriveAddress;
-        $order->arrive_time = $request->arriveTime;
-        $order->unit_id = $request->unitId;
-        $order->save();
-        $boxes = new BoxService();
-        $boxes = $boxes->UnitBoxes($request->boxCount,$request->unitId);
-        foreach ($boxes as $parm)
+        if ($request->boxes==null)
         {
-            $box = Box::find($parm)->Order()->associate ($order);
-            $box->save();
+            return response()->json(['code'=>'500','message'=>'箱体不足']);
         }
-        return response()->json(['下单成功']);
+        $user_id = $request->user()->id;
+        $order = Order::create(['user_id'=>$user_id,'billno'=>Helpers::generateBillNo(),
+            'status'=>$request->status,
+            'arrive_address'=>$request->arriveAddress,
+            'arrive_time'=>$request->arriveTime,
+            'unit_id'=>$request->unitId]);
+        $boxes = new BoxService();
+        $enough = $boxes->BoxCount($request->unitId,$request->boxes);
+        if ($enough=='error')
+        {
+            return response()->json(['code'=>'JN001','message'=>'下单失败']);
+
+        }
+        $rentbox = $boxes->RentBoxes($request->unitId,$request->boxes,$order->id);
+
+        //冻结资金
+        $flow = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$order->billno,'type'=>1,'price'=>300]);
+        $freeze = new AlipayService();
+       $flow_id = strval($flow->flow_id) . '1';
+        $result = $freeze->freeze($flow_id,$flow->billno);
+        return response()->json(['code'=>200,'message'=>'下单成功','ali'=>$result]);
     }
+
+
 
     public function getOrders(Request $request)
     {
         $user_id = $request->user()->id;
-        $orders = Order::where('user_id',$user_id)->get();
+        $orders = Order::where('user_id',$user_id)->orderBy('updated_at','DESC')->get();
         $result = $orders->map(function ($value){
             $price = new PriceService();
-            $hour = $price->timeDifference($value->get_time);
+            $hour = $price->timeCount($value->get_time);
             $price = $price->getPrice($value->billno) * $hour;
             return ['orderId'=>$value->billno,
                 'box'=>DB::table('boxes')->select('box_type',DB::raw('count(*) as box_count'))
@@ -68,17 +77,26 @@ class OrderController extends Controller
     //传参用户token 订单billno
     public function queryOrder(Request $request)
     {
-        $order = Order::where('billno',$request->billNo)->first();
-        $user = $order->User()->first();
-        $box_count = $order->Boxes->count();
-        return response()->json(['billNo' =>$order->billno, 'boxCount'=>$box_count,'userName'=>$user->name,'arriveAdress'=>$order->home_address,'phone'=>$user->phone]);
+        $order = DB::table('orders')->where('billno',$request->billNo)->get();
+        $order = $order->map(function ($order){
+            $boxes = new BoxService();
+            $boxes = $boxes->Boxes($order->id);
+            $price = new PriceService();
+            $hour = $price->timeCount($order->get_time);
+            $this->price = $price->getPrice($order->billno) * $hour;
+            $order->boxes = $boxes;
+            $order->price = $this->price;
+            return $order;
+        });
+//        DB::table('orders')->where('billno',$request->billNo)->update(['price'=>$this->price]);
+        return response()->json(['data'=>$order]);
     }
 
     public function finishOrder(Request $request)
     {
         $user = $request->user()->Admin()->first();
         $order = Order::where('billno','=',$request->orderId);
-        $order->update(['admin_id'=>$user->id]);
+        $order->update(['admin_id'=>$user->id,'status'=>5]);
         $boxes = $order->first()->Boxes()->get();
         foreach ($boxes as $box) {
             $box->Order()->dissociate();

@@ -15,7 +15,7 @@ class CreateOrderBoxTable extends Migration
     {
         Schema::create('order_box', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('order_id');
+            $table->integer('order_id')->default(null);
             $table->integer('box_id');
             $table->timestamps();
         });

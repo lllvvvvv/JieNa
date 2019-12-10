@@ -11,9 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+//Route::get('/', function () {
+//    return view()->file(resource_path().'/views/homePage/index.html.php');
+//})->name('login');
+
+Route::get('/','HomePageController@index');
+
+Route::get('hello', function () {
+    return 'Hello, Welcome to LaravelAcademy.org';
 });
-
-Route::get('/test','TestController@test');
-

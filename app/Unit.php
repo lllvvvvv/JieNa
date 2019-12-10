@@ -17,4 +17,9 @@ class Unit extends Model
     {
         return $this->hasOne('App\Order','unit_id');
     }
+
+    public function admins()
+    {
+        return $this->hasMany('App\Admin','unit_id');
+    }
 }

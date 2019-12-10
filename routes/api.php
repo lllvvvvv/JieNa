@@ -12,9 +12,9 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+//判断用户是支付宝还是微信
 Route::group(['middleware' => 'tokenType'],function (){
-    Route::get('getUserToken','AlipayController@userInfo');
+    Route::post('getUserToken','AlipayController@userInfo');
 });
 
 Route::get('decrypt','AlipayController@decrypt');
@@ -29,26 +29,40 @@ Route::group(['middleware' => 'auth:api'],function (){
 //获取用户所有订单
     Route::get('getOrders','OrderController@getOrders');
     //订单查询
-    Route::get('queryOrder','OrderController@queryOrder');
+    Route::post('queryOrder','OrderController@queryOrder');
     //获取所有小区
     Route::get('getUnits','UnitController@getUnits');
-    //生成箱体
-//    Route::post('addBoxes','BoxesController');
-    //还箱完成
-    Route::post('confirmReceipt','AdminController@confirmReceipt');
     //通知管理员上门
     Route::post('uploadAddress','OrderController@uploadAddress');
     //获取上门订单列表
     Route::get('deliveryList','AdminController@deliveryList');
     //用户拿到箱子，开始计时
     Route::get('timingBegins','AdminController@timingBegins');
-    //管理员拿到箱子,结束订单
-    Route::get('confirmReceipt','AdminController@confirmReceipt');
     //获取回收订单列表
     Route::get('retrieveList','AdminController@retrieveList');
+    //小区列表
+    Route::get('unitList','UnitController@unitList');
+    //批量添加箱体
+    Route::post('addBoxes','BoxController@addBoxes');
+    //完成订单
+    Route::post('finishOrder','OrderController@finishOrder');
+    //管理员还箱
+    Route::get('confirmReceipt','AdminController@confirmReceipt');
 
 });
 
+
+
+//加密信息解码，生成用户
+Route::post('getUserPhone','AlipayController@getUserPhone');
+Route::post('notify','AlipayController@notify');
+Route::get('freeze','AlipayController@freeze');
+
 //支付宝接口
 Route::get('AliUserToken','AlipayController@userInfo')->name('AliToken');
+//获取用户手机号
+//资金冻结
+Route::get('freeze','AlipayController@freeze');
+
+    Route::get('/test','TestController@test');
 

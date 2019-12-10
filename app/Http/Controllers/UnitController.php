@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\BoxService;
 use App\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,12 +13,15 @@ class UnitController extends Controller
     {
         $units = Unit::all();
         $result = $units->map(function ($value){
-            return ['unityName'=>$value->name,
-                'box'=>DB::table('boxes')->select('box_type',DB::raw('count(*) as box_count'))
+
+            return ['name'=>$value->name,
+                'id'=>$value->id,
+                'boxes'=>DB::table('boxes')->select('box_type',DB::raw('count(*) as box_count'))
                     ->where('unit_id',$value->id)
                     ->groupBy('box_type')
-                    ->get()];
+                    ->get(),
+                ];
         });
-        return $result;
+        return response()->json(['data'=>$result]);
     }
 }

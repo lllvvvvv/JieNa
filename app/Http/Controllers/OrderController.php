@@ -33,12 +33,13 @@ class OrderController extends Controller
             'status'=>$request->status,
             'arrive_address'=>$request->arriveAddress,
             'arrive_time'=>$request->arriveTime,
-            'unit_id'=>$request->unitId]);
+            'unit_id'=>$request->unitId,
+            'boxes'=>collect($request->boxes)->toJson()]);
         $boxes = new BoxService();
         $enough = $boxes->BoxCount($request->unitId,$request->boxes);
         if ($enough=='error')
         {
-            return response()->json(['code'=>'JN001','message'=>'下单失败']);
+            return response()->json(['code'=>'JN001','message'=>'下单失败箱子不够']);
         }
         $rentbox = $boxes->RentBoxes($request->unitId,$request->boxes,$order->id);
 
@@ -110,6 +111,23 @@ class OrderController extends Controller
             'code'=>200,
             'message'=>'order status update'
         ]);
+    }
+
+    public function buyBox(Request $request)
+    {
+        $order = Order::where('billno',$request->orderId)->first();
+        $require = $request->boxes;
+        $price = PriceService::getBoxDeposit($request->boxes);
+        $pay = new AlipayService();;
+        $result = $pay->buyBox($request->orderId,$price,$request->user()->ali_uid);
+
+        foreach ($require as $arr)
+        {
+            $boxes = $order->Boxes()->where('box_type',$arr['box_type'])
+                ->take($arr['box_count'])
+                ->update(['status'=>2,'buyer'=>$request->user()->id]);
+        }
+        return response()->json(['code'=>200,'message'=>$result]);
     }
 
 }

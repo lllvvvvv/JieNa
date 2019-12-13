@@ -74,20 +74,20 @@ class AlipayService
 
     public function freeze($order)
     {
-        $flow_id = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$order,'type'=>1,'price'=>300]); //生成流水号
         $unit = Order::where('billno',$order)->first()->Unit()->first();
         $boxes = Helpers::getBoxes($order);
         $price = PriceService::getBoxDeposit($boxes);
         $request = new \AlipayFundAuthOrderAppFreezeRequest();
+        $flow_id = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$order,'type'=>1,'price'=>$price]); //生成流水号
         $request->setNotifyUrl("https://www.go2020.cn/api/notify");
         $t = "{" .
             "\"out_order_no\": \"$order\"," .
-            "\"out_request_no\":\"$flow_id\"," .
+            "\"out_request_no\":\"$flow_id->flow_id\"," .
             "\"order_title\":\"预授权冻结\"," .
             "\"amount\":$price," .
             "\"product_code\":\"PRE_AUTH_ONLINE\"," .
             "\"payee_logon_id\":\"c17798521228@126.com\"," .
-            "\"extra_param\":\"{\\\"category\\\":\\\"RENT_LUGGAGE\\\",\\\"outStoreCode\\\":\\\"unit.$order->unit_id\\\",\\\"outStoreAlias\\\":\\\"$unit->address\\\"}\"," . //charge001
+            "\"extra_param\":\"{\\\"category\\\":\\\"RENT_LUGGAGE\\\",\\\"outStoreCode\\\":\\\"unit.$unit->id\\\",\\\"outStoreAlias\\\":\\\"$unit->address\\\"}\"," . //charge001
 //            "\"pay_timeout\":\"2d\"" .
 //            "\"scene_code\":\"OVERSEAS_ONLINE_AUTH_COMMON_SCENE\"" .
             "\"enable_pay_channels\":\"[{\\\"payChannelType\\\":\\\"CREDITZHIMA\\\"},{\\\"payChannelType\\\":\\\"MONEY_FUND\\\"},{\\\"payChannelType\\\":\\\"PCREDIT_PAY\\\"}]\"" .
@@ -95,26 +95,60 @@ class AlipayService
             "}";
         $request->setBizContent($t);
         $result = $this->c->sdkExecute( $request);
+        Log::info($result);
         return $result;
     }
 
-    public function pay($flow_id)
+    public function pay($billno,$notify,$price)
     {
+        $flow = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$billno,'type'=>2,'price'=>$price]);
+        $unit = Order::where('billno',$billno)->first()->Unit()->first();
         $request = new \AlipayTradePayRequest();
         $request->setNotifyUrl("https://www.go2020.cn/api/notify");
         $request->setBizContent("{" .
-            "\"out_trade_no\":\"$flow_id\"," .
+            "\"out_trade_no\":\"$flow->flow_id\"," .
             "\"product_code\":\"PRE_AUTH_ONLINE\",".
-            "\"auth_no\":\"2019120910002001000556705151\"," .
+            "\"auth_no\":\"$notify->auth_no\"," .
             "\"subject\":\"预授权转支付测试\"," .
-            "\"buyer_id\":\"2088422444839000\"," .
+            "\"buyer_id\":\"$notify->payer_user_id\"," .
             "\"seller_id\":\"2088631770405887\"," .
-            "\"total_amount\":\"0.01\",".
-            "\"store_id\":\"charge001\",".
+            "\"total_amount\":\"$price\",".
+            "\"store_id\":\"unit.$unit->id\",".
             "\"auth_confirm_mode\":\"COMPLETE\"".
             "  }");
         $result = $this->c->execute($request);
         return $result;
+    }
+
+    public function unfreeze($billno,$notify)
+    {
+        $request = new \AlipayFundAuthOrderUnfreezeRequest();
+        $flow = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$billno,'type'=>3,'price'=>$notify->amount]);
+        $request->setNotifyUrl("https://www.go2020.cn/api/notify");
+        $request->setBizContent(
+            "{" .
+            "\"auth_no\":\"$notify->auth\"," .
+            "\"out_request_no\":\"$flow->flow_id\"," .
+            "\"amount\":$notify->amount," .
+            "\"remark\":\"0元免费\"," .
+            "\"extra_param\":\"{\\\"unfreezeBizInfo\\\": \\\"{\\\\\\\"bizComplete\\\\\\\":\\\\\\\"true\\\\\\\"}\\\"}\"" .
+            "  }"
+        );
+    }
+
+    public function buyBox($billno,$price,$ali_uid)
+    {
+        $request = new \AlipayTradePayRequest();
+        $flow = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$billno,'type'=>4,'price'=>$price]);
+        $request->setBizContent("{" .
+            "\"out_trade_no\":\"$flow->flow_id\"," .
+            "\"total_amount\":$price," .
+            "\"subject\":\"鲸亿盒子\"," .
+            "\"buyer_id\":\"$ali_uid\"," .
+            "  }");
+        $result = $this->c->execute( $request);
+        return $result;
+
     }
 
 }

@@ -35,6 +35,7 @@ class Helpers{
     {
         $boxes = json_decode(Order::where('billno',$order)->first()->boxes);
         $result = array();
+        dd($boxes);
         foreach ($boxes as $box)
         {
             array_push($result,json_decode(json_encode($box), true));

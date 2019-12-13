@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Helpers;
+use App\Notify;
 use App\Order;
 use App\OrdersFlow;
 use App\Services\AlipayService;
 use App\Services\BoxService;
+use App\Services\PriceService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yansongda\Pay\Log;
 
 class AdminController extends Controller
 {
@@ -63,12 +66,21 @@ class AdminController extends Controller
         //解除箱子关系
         $user = $request->user()->Admin()->first();
         $order = Order::where('billno',$request->orderId);
-        $order->update(['admin_id' => $user->id]);
-        $flow = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$order->first()->billno,'type'=>1,'price'=>666]);
-        $pay = new AlipayService();
-        $result = $pay->pay($flow->flow_id);
+        $order->update(['admin_id' => $user->id,'status'=>5,'pay_time'=>Carbon::now()]);
+        $order = $order->first();
+        $flow_id = OrdersFlow::where('billno',$order->billno)->where('type',1)->first()->flow_id;
+        $notify = json_decode(Notify::where('flow_id',$flow_id)->first()->content);
 
-        $boxes = $order->first()->Boxes()->get();
+        $price = new PriceService();
+        $price = $price->getPrice($order->billno);
+        $pay = new AlipayService();
+        if ($price>0) {
+            $result = $pay->pay($order->billno, $notify, $price);
+        }
+        else {
+            $result = $pay->unfreeze($order->billno,$notify);
+        }
+        $boxes = $order->Boxes()->get();
         foreach ($boxes as $box) {
             $box->Order()->dissociate();
             $box->unit_id = $user->unit_id;
@@ -79,4 +91,6 @@ class AdminController extends Controller
 
         return response()->json(['code'=>200,'message'=>'还箱完成','result'=>$result]);
     }
+
+
 }

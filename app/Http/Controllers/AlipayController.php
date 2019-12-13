@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Notify;
 use App\Services\AlipayService;
 use App\User;
 use Illuminate\Http\Request;
@@ -52,9 +53,17 @@ class AlipayController extends Controller
 
     public function notify(Request $request)
     {
-        Log::info($request);
-//        Log::info($request->auth_no);
-        return $request;
+
+        if ($request->notify_type == 'fund_auth_freeze')
+        {
+            $notify = Notify::create(['flow_id'=>$request->out_request_no,'notify_type'=>$request->notify_type,'content'=>json_encode($request->all())]);
+            return 'success';
+        }
+        if ($request->notify_type == 'trade_status_sync')
+        {
+            $notify = Notify::create(['flow_id'=>$request->out_trade_no,'notify_type'=>$request->notify_type,'content'=>json_encode($request->all())]);
+            return 'success';
+        }
     }
 
 

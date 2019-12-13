@@ -44,10 +44,12 @@ Route::group(['middleware' => 'auth:api'],function (){
     Route::get('unitList','UnitController@unitList');
     //批量添加箱体
     Route::post('addBoxes','BoxController@addBoxes');
-    //完成订单
-    Route::post('finishOrder','OrderController@finishOrder');
+//    //完成订单
+//    Route::post('finishOrder','OrderController@finishOrder');
     //管理员还箱
-    Route::get('confirmReceipt','AdminController@confirmReceipt');
+    Route::post('confirmReceipt','AdminController@confirmReceipt');
+    //用户买箱
+    Route::post('buyBox','OrderController@buyBox');
 
 });
 

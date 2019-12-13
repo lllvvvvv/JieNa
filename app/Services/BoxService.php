@@ -42,10 +42,6 @@ class BoxService
         return $result;
     }
 
-    public function distribute($boxes)
-    {
-
-    }
 
 
 }

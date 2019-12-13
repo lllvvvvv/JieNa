@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Helpers;
+use App\Notify;
 use App\Order;
+use App\OrdersFlow;
 use App\Services\AlipayService;
 use App\Services\BoxService;
 use App\Services\PriceService;
@@ -27,7 +29,12 @@ class TestController extends Controller
 //        $test = new PriceService();
 //        $test->timeDifference(null);
 //        return response()->file(storage_path(). '/app/aliKey/file.txt');
-        $unit = Order::where('billno',$request->order)->first()->Unit()->first();
-        dd($unit->address);
+//        $boxes = Helpers::getBoxes($request->order);
+//        $price = PriceService::getBoxDeposit($boxes);
+
+        $order = 'JYB20191211173715';
+        $flow_id = OrdersFlow::where('billno',$order)->where('type',1)->first()->flow_id;
+        $notify = json_decode(Notify::where('flow_id',$flow_id)->first()->content);
+
     }
 }

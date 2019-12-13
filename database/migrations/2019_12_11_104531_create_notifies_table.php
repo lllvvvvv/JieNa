@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBoxTypeTable extends Migration
+class CreateNotifiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,11 @@ class CreateBoxTypeTable extends Migration
      */
     public function up()
     {
-        Schema::create('box_type', function (Blueprint $table) {
-            $table->integer('box_type');
-            $table->float('price');
+        Schema::create('notifies', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('flow_id');
+            $table->string('notify_type');
+            $table->json('content');
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ class CreateBoxTypeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('box_type');
+        Schema::dropIfExists('notifies');
     }
 }

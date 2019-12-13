@@ -12,27 +12,30 @@ class PriceService
     public function getPrice($orderId)
     {
         //一块钱4小时,一天最多五块钱
-        $boxes = Order::where('billno',$orderId)->first()->Boxes()->get();
-        $amount = 0;
+        $order = Order::where('billno',$orderId)->first();
+        $boxes = $order->Boxes()->get();
+        $this->amount = 0;
         foreach ($boxes as $box)
         {
+            $begin_time = $order->get_time;
+            $time = $this->timeCount($begin_time);
             $price = $box->Price()->first()->price;
-            $amount +=$price;
+            $this->amount += $price*$time;
         }
-        return $amount;
+        return $this->amount;
     }
 
-    public function timeDifference($date)
-    {
-        if ($date) {
-            $carbon = carbon::parse($date);
-            $hour = (new Carbon)->diffInHours($carbon) + 1;
-            return $hour;
-        }
-        else{
-            return 0;
-        }
-    }
+//    public function timeDifference($date)
+//    {
+//        if ($date) {
+//            $carbon = carbon::parse($date);
+//            $hour = (new Carbon)->diffInHours($carbon) + 1;
+//            return $hour;
+//        }
+//        else{
+//            return 0;
+//        }
+//    }
 
     public function timeCount($begin_time,$end_time = null)
     {
@@ -46,7 +49,7 @@ class PriceService
         {
             case 1:
                 $free = carbon::parse($begin_time)->diffInMinutes($end_time);
-                if ($free <= 14)
+                if ($free <= 59)
                 {
                     $target = 0;
                     break;
@@ -75,6 +78,7 @@ class PriceService
         return $target;
     }
 
+
     public function hoursCount($hour)
     {
         if ($hour>20)
@@ -84,6 +88,7 @@ class PriceService
         $target = ceil($hour/4);
         return $target;
     }
+
 
 
     //获取箱体押金总和

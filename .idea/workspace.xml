@@ -4,12 +4,16 @@
     <list default="true" id="014a2fa3-741f-47af-a739-3658011888bf" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Helpers/Helpers.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Helpers/Helpers.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AdminController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AdminController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AlipayController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AlipayController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/OrderController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/OrderController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/TestController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/TestController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Order.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Order.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/OrdersFlow.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/OrdersFlow.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/AlipayService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/AlipayService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/BoxService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/BoxService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/PriceService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/PriceService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Unit.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Unit.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_04_110143_create_box_type_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_04_110143_create_box_type_table.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -206,7 +210,9 @@
       <workItem from="1573436922212" duration="16624000" />
       <workItem from="1575427452834" duration="126000" />
       <workItem from="1575427608265" duration="10945000" />
-      <workItem from="1575511423244" duration="62171000" />
+      <workItem from="1575511423244" duration="79414000" />
+      <workItem from="1576050466130" duration="7463000" />
+      <workItem from="1576116327332" duration="15179000" />
     </task>
     <servers />
   </component>

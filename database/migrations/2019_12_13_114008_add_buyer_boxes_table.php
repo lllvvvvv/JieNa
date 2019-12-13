@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBoxTypeTable extends Migration
+class AddBuyerBoxesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class CreateBoxTypeTable extends Migration
      */
     public function up()
     {
-        Schema::create('box_type', function (Blueprint $table) {
-            $table->integer('box_type');
-            $table->float('price');
-            $table->timestamps();
+        Schema::table('boxes', function (Blueprint $table) {
+            $table->integer('buyer')->default(null);
         });
     }
 
@@ -27,6 +25,9 @@ class CreateBoxTypeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('box_type');
+        Schema::table('boxes',function (Blueprint $table)
+        {
+            $table->dropColumn('buyer');
+        });
     }
 }

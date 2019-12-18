@@ -16,10 +16,12 @@ class UnitController extends Controller
 
             return ['name'=>$value->name,
                 'id'=>$value->id,
-                'boxes'=>DB::table('boxes')->select('box_type',DB::raw('count(*) as box_count'))
+                'boxes'=>DB::table('boxes')
+                    ->join('box_type','boxes.box_type','=','box_type.box_type')
                     ->where('unit_id',$value->id)
+                    ->select('boxes.box_type',DB::raw('count(*) as box_count'),'deposit')
                     ->groupBy('box_type')
-                    ->get(),
+                    ->get()
                 ];
         });
         return response()->json(['data'=>$result]);

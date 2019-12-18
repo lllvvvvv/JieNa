@@ -13,7 +13,7 @@ class PriceService
     {
         //一块钱4小时,一天最多五块钱
         $order = Order::where('billno',$orderId)->first();
-        $boxes = $order->Boxes()->get();
+        $boxes = $order->Boxes()->where('status',1)->get();
         $this->amount = 0;
         foreach ($boxes as $box)
         {

@@ -70,7 +70,6 @@ class AdminController extends Controller
         $order = $order->first();
         $flow_id = OrdersFlow::where('billno',$order->billno)->where('type',1)->first()->flow_id;
         $notify = json_decode(Notify::where('flow_id',$flow_id)->first()->content);
-
         $price = new PriceService();
         $price = $price->getPrice($order->billno);
         $pay = new AlipayService();
@@ -80,7 +79,7 @@ class AdminController extends Controller
         else {
             $result = $pay->unfreeze($order->billno,$notify);
         }
-        $boxes = $order->Boxes()->get();
+        $boxes = $order->Boxes()->where('status',1)->get();
         foreach ($boxes as $box) {
             $box->Order()->dissociate();
             $box->unit_id = $user->unit_id;

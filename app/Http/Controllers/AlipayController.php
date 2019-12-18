@@ -64,6 +64,11 @@ class AlipayController extends Controller
             $notify = Notify::create(['flow_id'=>$request->out_trade_no,'notify_type'=>$request->notify_type,'content'=>json_encode($request->all())]);
             return 'success';
         }
+        if ($request->notify_type == 'fund_auth_unfreeze')
+        {
+            $notify = Notify::create(['flow_id'=>$request->out_request_no,'notify_type'=>$request->notify_type,'content'=>json_encode($request->all())]);
+            return 'success';
+        }
     }
 
 

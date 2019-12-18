@@ -29,7 +29,7 @@ class BoxService
                 ->where('status',0)
                 ->where('box_type',$box['box_type'])
                 ->take($box['box_count'])
-                ->update(['unit_id'=>0,'order_id'=>$order_id,'status'=>1]);
+                ->update(['order_id'=>$order_id,'status'=>1]);
         }
     }
 

@@ -11,5 +11,6 @@ class OrdersFlow extends Model
     //1:冻结
     //2:支付
     //3:解冻
+    //4:买箱子
     protected $fillable = ['flow_id','billno','user_id','price','type'];
 }

@@ -12,6 +12,8 @@ use App\Services\PriceService;
 use App\Unit;
 use App\User;
 use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class TestController extends Controller
@@ -31,10 +33,12 @@ class TestController extends Controller
 //        return response()->file(storage_path(). '/app/aliKey/file.txt');
 //        $boxes = Helpers::getBoxes($request->order);
 //        $price = PriceService::getBoxDeposit($boxes);
+          $result = new PriceService();
+          $result->getPrice('JYB20191216175307');
+//        $order = 'JYB20191211173715';
 
-        $order = 'JYB20191211173715';
-        $flow_id = OrdersFlow::where('billno',$order)->where('type',1)->first()->flow_id;
-        $notify = json_decode(Notify::where('flow_id',$flow_id)->first()->content);
+//        $flow_id = OrdersFlow::where('billno',$order)->where('type',1)->first()->flow_id;
+//        $notify = json_decode(Notify::where('flow_id',$flow_id)->first()->content);
 
     }
 }

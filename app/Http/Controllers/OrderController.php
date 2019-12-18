@@ -12,9 +12,11 @@ use App\Services\BoxService;
 use App\Services\PriceService;
 use App\User;
 use Cassandra\Date;
+use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use Illuminate\Support\Facades\Log;
 use function MongoDB\BSON\toJSON;
 use function Symfony\Component\Console\Tests\Command\createClosure;
 
@@ -35,17 +37,24 @@ class OrderController extends Controller
             'arrive_time'=>$request->arriveTime,
             'unit_id'=>$request->unitId,
             'boxes'=>collect($request->boxes)->toJson()]);
+
+
+        $freeze = new AlipayService();
+        $result = $freeze->freeze($order->billno);
+        return response()->json(['code'=>200,'message'=>'下单成功','ali'=>$result,'id'=>$order->id]);
+    }
+
+    public function distributionBox(Request $request)
+    {
         $boxes = new BoxService();
+        Order::where('id',$request->id)->update(['freeze'=>1]);
         $enough = $boxes->BoxCount($request->unitId,$request->boxes);
         if ($enough=='error')
         {
             return response()->json(['code'=>'JN001','message'=>'下单失败箱子不够']);
         }
-        $rentbox = $boxes->RentBoxes($request->unitId,$request->boxes,$order->id);
-
-        $freeze = new AlipayService();
-        $result = $freeze->freeze($order->billno);
-        return response()->json(['code'=>200,'message'=>'下单成功','ali'=>$result]);
+        $rentbox = $boxes->RentBoxes($request->unitId,$request->boxes,$request->id);
+        return response()->json(['code'=>200,'message'=>'分配成功']);
     }
 
 
@@ -53,14 +62,15 @@ class OrderController extends Controller
     public function getOrders(Request $request)
     {
         $user_id = $request->user()->id;
-        $orders = Order::where('user_id',$user_id)->orderBy('updated_at','DESC')->get();
+        $orders = Order::where('user_id',$user_id)->where('freeze',1)->orderBy('updated_at','DESC')->get();
         $result = $orders->map(function ($value){
             $price = new PriceService();
             $hour = $price->timeCount($value->get_time);
-            $price = $price->getPrice($value->billno) * $hour;
+            $price = $price->getPrice($value->billno);
             return ['orderId'=>$value->billno,
                 'box'=>DB::table('boxes')->select('box_type',DB::raw('count(*) as box_count'))
                 ->where('order_id',$value->id)
+                ->where('status',1)
                 ->groupBy('box_type')
                 ->get(),
                 'get_time' => $value->get_time,'createTime'=>$value->created_at->toDateTimeString(),
@@ -116,18 +126,31 @@ class OrderController extends Controller
     public function buyBox(Request $request)
     {
         $order = Order::where('billno',$request->orderId)->first();
-        $require = $request->boxes;
         $price = PriceService::getBoxDeposit($request->boxes);
         $pay = new AlipayService();;
-        $result = $pay->buyBox($request->orderId,$price,$request->user()->ali_uid);
+        $result = $pay->buyBox($request->orderId,$price,$request->user()['ali_uid']);
+        return response()->json(['code'=>200,'message'=>$result]);
+    }
 
+    public function confirmPurchase(Request $request)
+    {
+        $order = Order::where('billno',$request->orderId)->first();
+        $require = $request->boxes;
         foreach ($require as $arr)
         {
             $boxes = $order->Boxes()->where('box_type',$arr['box_type'])
                 ->take($arr['box_count'])
                 ->update(['status'=>2,'buyer'=>$request->user()->id]);
         }
-        return response()->json(['code'=>200,'message'=>$result]);
+        if ($order->Boxes()->where('status',1)->count()==0)
+        {
+            $order->update(['status'=>8]);
+        }
+        return response()->json(['code'=>200,'message'=>'箱子交易成功']);
+
     }
+
+    
+
 
 }

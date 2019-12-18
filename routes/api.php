@@ -51,6 +51,14 @@ Route::group(['middleware' => 'auth:api'],function (){
     //用户买箱
     Route::post('buyBox','OrderController@buyBox');
 
+    //用户买箱确认
+    Route::post('confirmPurchase','OrderController@confirmPurchase');
+
+    //下单确认成功，分配箱体给订单
+    Route::post('distributionBox','OrderController@distributionBox');
+    //获取Qrcode
+    Route::get('getQrcode','OrderController@getQrcode');
+
 });
 
 

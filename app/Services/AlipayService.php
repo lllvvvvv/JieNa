@@ -9,7 +9,6 @@ use App\OrdersFlow;
 use App\User;
 use http\Env\Request;
 use AopClient;
-use Illuminate\Support\Facades\Log;
 
 class AlipayService
 {
@@ -68,7 +67,6 @@ class AlipayService
         $aesIv = base64_decode($iv);
         $aesCipher = base64_decode($encryptedData);
         $result = openssl_decrypt($aesCipher,"AES-128-CBC",$aeskey,1,$aesIv);
-        Log::info($result);
         return $result;
     }
 
@@ -95,7 +93,6 @@ class AlipayService
             "}";
         $request->setBizContent($t);
         $result = $this->c->sdkExecute( $request);
-        Log::info($result);
         return $result;
     }
 
@@ -103,6 +100,10 @@ class AlipayService
     {
         $flow = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$billno,'type'=>2,'price'=>$price]);
         $unit = Order::where('billno',$billno)->first()->Unit()->first();
+        if ($price>$notify->amount)
+        {
+            $price = $notify->amount;
+        }
         $request = new \AlipayTradePayRequest();
         $request->setNotifyUrl("https://www.go2020.cn/api/notify");
         $request->setBizContent("{" .
@@ -127,25 +128,31 @@ class AlipayService
         $request->setNotifyUrl("https://www.go2020.cn/api/notify");
         $request->setBizContent(
             "{" .
-            "\"auth_no\":\"$notify->auth\"," .
+            "\"auth_no\":\"$notify->auth_no\"," .
             "\"out_request_no\":\"$flow->flow_id\"," .
             "\"amount\":$notify->amount," .
             "\"remark\":\"0元免费\"," .
             "\"extra_param\":\"{\\\"unfreezeBizInfo\\\": \\\"{\\\\\\\"bizComplete\\\\\\\":\\\\\\\"true\\\\\\\"}\\\"}\"" .
             "  }"
         );
+        $result = $this->c->execute( $request);
+        return $result;
+
     }
 
     public function buyBox($billno,$price,$ali_uid)
     {
-        $request = new \AlipayTradePayRequest();
+        Log::info($price.$billno.$ali_uid);
+        $request = new \AlipayTradeCreateRequest();
         $flow = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$billno,'type'=>4,'price'=>$price]);
-        $request->setBizContent("{" .
+        $request->setNotifyUrl("https://www.go2020.cn/api/notify");
+        $s="{" .
             "\"out_trade_no\":\"$flow->flow_id\"," .
             "\"total_amount\":$price," .
             "\"subject\":\"鲸亿盒子\"," .
-            "\"buyer_id\":\"$ali_uid\"," .
-            "  }");
+            "\"buyer_id\":\"$ali_uid\"" .
+            "  }";
+        $request->setBizContent($s);
         $result = $this->c->execute( $request);
         return $result;
 

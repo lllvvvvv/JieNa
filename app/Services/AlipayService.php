@@ -87,8 +87,8 @@ class AlipayService
             "\"payee_logon_id\":\"c17798521228@126.com\"," .
             "\"extra_param\":\"{\\\"category\\\":\\\"RENT_LUGGAGE\\\",\\\"outStoreCode\\\":\\\"unit.$unit->id\\\",\\\"outStoreAlias\\\":\\\"$unit->address\\\"}\"," . //charge001
 //            "\"pay_timeout\":\"2d\"" .
-//            "\"scene_code\":\"OVERSEAS_ONLINE_AUTH_COMMON_SCENE\"" .
-            "\"enable_pay_channels\":\"[{\\\"payChannelType\\\":\\\"CREDITZHIMA\\\"},{\\\"payChannelType\\\":\\\"MONEY_FUND\\\"},{\\\"payChannelType\\\":\\\"PCREDIT_PAY\\\"}]\"" .
+//            "\"scene_code\":\"OVERSEAS_ONLINE_AUTH_COMMON_SCENE\"" .{\\"payChannelType\\":\\"CREDITZHIMA\\"},
+            "\"enable_pay_channels\":\"[{\\\"payChannelType\\\":\\\"MONEY_FUND\\\"},{\\\"payChannelType\\\":\\\"PCREDIT_PAY\\\"}]\"" .
 //            "\"identity_params\":\"{\\\"identity_hash\\\":\\\"ABCDEFDxxxxxx\\\",\\\"alipay_user_id\\\":\\\"2088xxx\\\"}\"" .
             "}";
         $request->setBizContent($t);
@@ -99,7 +99,9 @@ class AlipayService
     public function pay($billno,$notify,$price)
     {
         $flow = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$billno,'type'=>2,'price'=>$price]);
-        $unit = Order::where('billno',$billno)->first()->Unit()->first();
+        $order = Order::where('billno',$billno);
+        $order->update(['price'=>$price]);
+        $unit = $order->first()->Unit()->first();
         if ($price>$notify->amount)
         {
             $price = $notify->amount;
@@ -142,7 +144,6 @@ class AlipayService
 
     public function buyBox($billno,$price,$ali_uid)
     {
-        Log::info($price.$billno.$ali_uid);
         $request = new \AlipayTradeCreateRequest();
         $flow = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$billno,'type'=>4,'price'=>$price]);
         $request->setNotifyUrl("https://www.go2020.cn/api/notify");

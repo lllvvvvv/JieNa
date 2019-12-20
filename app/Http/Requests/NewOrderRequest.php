@@ -25,7 +25,7 @@ class NewOrderRequest extends FormRequest
     {
         return [
             'status' => 'required',
-            'unitId' => 'required'
+            'unitName' => 'required'
         ];
     }
 

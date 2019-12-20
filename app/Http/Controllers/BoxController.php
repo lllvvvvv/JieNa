@@ -20,9 +20,10 @@ class BoxController extends Controller
     {
         $unit_id = $request->unit_id;
         $count = $request->count;
+        $box_type = $request->box_type;
         while ($count>0)
         {
-            DB::table('boxes')->insert(['unit_id'=>$unit_id,'box_type'=>1,'status'=>0]);
+            DB::table('boxes')->insert(['unit_id'=>$unit_id,'box_type'=>$box_type,'status'=>0]);
             $count--;
         };
         return response()->json(['code' => 200,'message' => '生成箱体完成']);

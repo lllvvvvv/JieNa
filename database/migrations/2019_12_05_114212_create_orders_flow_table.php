@@ -19,7 +19,7 @@ class CreateOrdersFlowTable extends Migration
             $table->char('billno');
             $table->integer('type');
             $table->integer('user_id');
-            $table->integer('price');
+            $table->float('price');
             $table->timestamps();
         });
     }

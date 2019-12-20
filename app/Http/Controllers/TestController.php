@@ -33,8 +33,7 @@ class TestController extends Controller
 //        return response()->file(storage_path(). '/app/aliKey/file.txt');
 //        $boxes = Helpers::getBoxes($request->order);
 //        $price = PriceService::getBoxDeposit($boxes);
-          $result = new PriceService();
-          $result->getPrice('JYB20191216175307');
+
 //        $order = 'JYB20191211173715';
 
 //        $flow_id = OrdersFlow::where('billno',$order)->where('type',1)->first()->flow_id;

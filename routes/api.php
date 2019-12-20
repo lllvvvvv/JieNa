@@ -59,8 +59,12 @@ Route::group(['middleware' => 'auth:api'],function (){
     //获取Qrcode
     Route::get('getQrcode','OrderController@getQrcode');
 
+    //获取已完成订单
+    Route::get('getFinishOrders','OrderController@getFinishOrders');
+
 });
 
+//手动解冻
 
 
 //加密信息解码，生成用户

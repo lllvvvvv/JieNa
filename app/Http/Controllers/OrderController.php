@@ -10,6 +10,7 @@ use App\OrdersFlow;
 use App\Services\AlipayService;
 use App\Services\BoxService;
 use App\Services\PriceService;
+use App\Unit;
 use App\User;
 use Cassandra\Date;
 use http\Env\Response;
@@ -17,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Log;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use function MongoDB\BSON\toJSON;
 use function Symfony\Component\Console\Tests\Command\createClosure;
 
@@ -30,18 +32,20 @@ class OrderController extends Controller
         {
             return response()->json(['code'=>'500','message'=>'箱体参数不全']);
         }
+        $unit = Unit::where('name','=',$request->unitName)->first();
+        $unitId = $unit ? $unit->id : 1;            //如果没这个小区,从公司配送，老板让这么干的!
         $user_id = $request->user()->id;
         $order = Order::create(['user_id'=>$user_id,'billno'=>Helpers::generateBillNo(),
             'status'=>$request->status,
             'arrive_address'=>$request->arriveAddress,
             'arrive_time'=>$request->arriveTime,
-            'unit_id'=>$request->unitId,
+            'unit_id'=>$unitId,
             'boxes'=>collect($request->boxes)->toJson()]);
 
 
         $freeze = new AlipayService();
         $result = $freeze->freeze($order->billno);
-        return response()->json(['code'=>200,'message'=>'下单成功','ali'=>$result,'id'=>$order->id]);
+        return response()->json(['code'=>200,'message'=>'下单成功','ali'=>$result,'id'=>$order->id,'unitId'=>$unitId]);
     }
 
     public function distributionBox(Request $request)
@@ -62,7 +66,7 @@ class OrderController extends Controller
     public function getOrders(Request $request)
     {
         $user_id = $request->user()->id;
-        $orders = Order::where('user_id',$user_id)->where('freeze',1)->orderBy('updated_at','DESC')->get();
+        $orders = Order::where('user_id',$user_id)->where('freeze',1)->whereNotIn('status',[7,5,8])->orderBy('updated_at','DESC')->get();
         $result = $orders->map(function ($value){
             $price = new PriceService();
             $hour = $price->timeCount($value->get_time);
@@ -79,6 +83,26 @@ class OrderController extends Controller
                 'price'=> $price];
         });
         return response()->json($result);
+    }
+
+
+    public function getFinishOrders(Request $request)
+    {
+        $user_id = $request->user()->id;
+        $orders = Order::where('user_id',$user_id)->where('status',5)->orderBy('updated_at','DESC')->get();
+        $result = $orders->map(function ($value){
+            $price = new PriceService();
+            $hour = $price->timeCount($value->get_time);
+            $price = $price->getPrice($value->billno);
+            return ['orderId'=>$value->billno,
+                'box'=>json_decode($value->boxes),
+                'get_time' => $value->get_time,'createTime'=>$value->created_at->toDateTimeString(),
+                'pay_time' => $value->pay_time,
+                'status' => $value->status,
+                'price'=> $value->price];
+        });
+        return response()->json($result);
+
     }
 
     //传参用户token 订单billno
@@ -150,7 +174,12 @@ class OrderController extends Controller
 
     }
 
-    
+    public function getQrcode(Request $request)
+    {
 
+        $data = QrCode::format('png')->size(300)->color(0,0,0)->backgroundColor(255,255,255)->generate($request->data);
+        $url = base64_encode($data);
+        return response()->json(['data'=>$url]);
+    }
 
 }

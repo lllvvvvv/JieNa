@@ -159,4 +159,22 @@ class AlipayService
 
     }
 
+
+    public function MovePay($moveno,$price,$ali_uid)
+    {
+        $request = new \AlipayTradeCreateRequest();
+        $flow = OrdersFlow::create(['flow_id'=>Helpers::generateFlowNo(),'billno'=>$moveno,'type'=>2,'price'=>$price]);
+        $request->setNotifyUrl("https://www.go2020.cn/api/notify");
+        $s="{" .
+            "\"out_trade_no\":\"$flow->flow_id\"," .
+            "\"total_amount\":$price," .
+            "\"subject\":\"鲸亿盒子搬家预约\"," .
+            "\"buyer_id\":\"$ali_uid\"" .
+            "  }";
+        $request->setBizContent($s);
+        $result = $this->c->execute( $request);
+        return $result;
+
+    }
+
 }

@@ -17,7 +17,11 @@ class AlipayController extends Controller
 
     public function userInfo(Request $request)
     {
-
+        $this->validate($request, [
+           'code' => 'required',
+           'phone'=> 'required',
+           'uid' => 'required'
+        ]);
         $info = new AlipayService();
         $info = $info->aliUserInfo($request->code,$request->phone,$request->uid);
         return response()->json($info);
@@ -25,6 +29,9 @@ class AlipayController extends Controller
 
     public function getUserPhone(Request $request)
     {
+        $this->validate($request, [
+           'res' => 'required'
+        ]);
         $pay = new AlipayService();
         $phone = $pay->decryptData($request->res);
         $phone = json_decode($phone)->mobile;

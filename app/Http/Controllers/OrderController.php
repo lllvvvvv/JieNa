@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Box;
 use App\Helpers\Helpers;
+use App\Http\Requests\BuyBoxRequest;
 use App\Http\Requests\NewOrderRequest;
 use App\Order;
 use App\OrdersFlow;
@@ -35,6 +36,12 @@ class OrderController extends Controller
         $unit = Unit::where('name','=',$request->unitName)->first();
         $unitId = $unit ? $unit->id : 1;            //如果没这个小区,从公司配送，老板让这么干的!
         $user_id = $request->user()->id;
+        $boxes = new BoxService();
+        $enough = $boxes->BoxCount( $unitId,$request->boxes);
+        if ($enough=='error')
+        {
+            return response()->json(['code'=>'JN001','message'=>'下单失败箱子不够']);
+        }
         $order = Order::create(['user_id'=>$user_id,'billno'=>Helpers::generateBillNo(),
             'status'=>$request->status,
             'arrive_address'=>$request->arriveAddress,
@@ -72,7 +79,7 @@ class OrderController extends Controller
             $hour = $price->timeCount($value->get_time);
             $price = $price->getPrice($value->billno);
             return ['orderId'=>$value->billno,
-                'box'=>DB::table('boxes')->select('box_type',DB::raw('count(*) as box_count'))
+                'box'=>DB::table( 'boxes')->select('box_type',DB::raw('count(*) as box_count'))
                 ->where('order_id',$value->id)
                 ->where('status',1)
                 ->groupBy('box_type')
@@ -108,6 +115,9 @@ class OrderController extends Controller
     //传参用户token 订单billno
     public function queryOrder(Request $request)
     {
+        $this->validate($request, [
+            'billNo' => 'required'
+        ]);
         $order = DB::table('orders')->where('billno',$request->billNo)->get();
         $order = $order->map(function ($order){
             $boxes = new BoxService();
@@ -125,6 +135,9 @@ class OrderController extends Controller
 
     public function finishOrder(Request $request)
     {
+        $this->validate($request, [
+           'orderId' => 'required'
+        ]);
         $user = $request->user()->Admin()->first();
         $order = Order::where('billno','=',$request->orderId);
         $order->update(['admin_id'=>$user->id,'status'=>5]);
@@ -140,6 +153,9 @@ class OrderController extends Controller
 
     public function uploadAddress(Request $request)
     {
+        $this->validate($request, [
+            'orderId' => 'address'
+        ]);
         $order = Order::where('billno','=',$request->orderId)->update(['home_address'=>$request->address,'status'=>4]);
         return response()->json([
             'code'=>200,
@@ -147,7 +163,7 @@ class OrderController extends Controller
         ]);
     }
 
-    public function buyBox(Request $request)
+    public function buyBox(BuyBoxRequest $request)
     {
         $order = Order::where('billno',$request->orderId)->first();
         $price = PriceService::getBoxDeposit($request->boxes);
@@ -158,11 +174,17 @@ class OrderController extends Controller
 
     public function confirmPurchase(Request $request)
     {
+        $this->validate($request, [
+            'orderId' => 'required',
+            'boxes' => 'required'
+        ]);
         $order = Order::where('billno',$request->orderId)->first();
         $require = $request->boxes;
         foreach ($require as $arr)
         {
+            Log::info($arr['box_count']);
             $boxes = $order->Boxes()->where('box_type',$arr['box_type'])
+                ->where('status',1)
                 ->take($arr['box_count'])
                 ->update(['status'=>2,'buyer'=>$request->user()->id]);
         }
@@ -180,6 +202,12 @@ class OrderController extends Controller
         $data = QrCode::format('png')->size(300)->color(0,0,0)->backgroundColor(255,255,255)->generate($request->data);
         $url = base64_encode($data);
         return response()->json(['data'=>$url]);
+    }
+
+    public function getAllOrders(Request $request)
+    {
+        $order = Order::all();
+        return response()->json(['code'=>200,'orders' => $order]);
     }
 
 }

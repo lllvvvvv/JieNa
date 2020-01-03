@@ -52,6 +52,9 @@ class AdminController extends Controller
     //开始计时间
     public function timingBegins(Request $request)
     {
+        $this->validate($request,[
+           'orderId' => 'required',
+        ]);
         $admin_id = $request->user()->Admin()->first()->id;
         $order = Order::where('billno',$request->orderId)->update(['status'=>3,
             'admin_id'=>$admin_id,
@@ -64,6 +67,9 @@ class AdminController extends Controller
     {
         //更改订单状态
         //解除箱子关系
+        $this->validate($request, [
+            'orderId' => 'required'
+        ]);
         $user = $request->user()->Admin()->first();
         $order = Order::where('billno',$request->orderId);
         $order->update(['admin_id' => $user->id,'status'=>5,'pay_time'=>Carbon::now()]);

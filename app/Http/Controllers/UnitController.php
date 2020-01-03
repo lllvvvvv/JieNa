@@ -19,6 +19,7 @@ class UnitController extends Controller
                 'boxes'=>DB::table('boxes')
                     ->join('box_type','boxes.box_type','=','box_type.box_type')
                     ->where('unit_id',$value->id)
+                    ->where('boxes.status',0)
                     ->select('boxes.box_type',DB::raw('count(*) as box_count'),'deposit')
                     ->groupBy('box_type')
                     ->get()

@@ -61,7 +61,12 @@ Route::group(['middleware' => 'auth:api'],function (){
 
     //获取已完成订单
     Route::get('getFinishOrders','OrderController@getFinishOrders');
-
+    //新建搬家订单
+    Route::post('newMoveOrder','MoveController@newMoveOrder');
+    //搬家订单确认支付
+    Route::get('verifyMovePay','MoveController@verifyMovePay');
+    //获取所有搬家订单
+    Route::get('getMoveOrder','MoveController@getMoveOrder');
 });
 
 //手动解冻
@@ -78,5 +83,15 @@ Route::get('AliUserToken','AlipayController@userInfo')->name('AliToken');
 //资金冻结
 Route::get('freeze','AlipayController@freeze');
 
-    Route::post('/test','TestController@test');
+Route::post('/test','TestController@test');
 
+
+//后台接口
+Route::group(['middleware' => 'auth:api','prefix' => 'back'],function (){
+    //获得所有租箱订单
+    Route::get('getAllOrders','OrderController@getAllOrders');
+    //获得所有搬家订单
+    Route::get('getAllMoveOrders','MoveController@getAllMoveOrders');
+    //获取所有买箱订单
+    Route::get('getAll1BoxOrders','BoxController@getAllBoxOrders');
+});

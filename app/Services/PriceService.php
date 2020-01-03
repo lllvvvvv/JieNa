@@ -49,7 +49,7 @@ class PriceService
         {
             case 1:
                 $free = carbon::parse($begin_time)->diffInMinutes($end_time);
-                if ($free <= 59)
+                if ($free <= 14)
                 {
                     $target = 0;
                     break;

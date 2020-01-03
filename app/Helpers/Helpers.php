@@ -30,6 +30,11 @@ class Helpers{
         return 'FLOW' . date("YmdHis");
     }
 
+    public static function generateMoveNO()
+    {
+        return 'MOVE' . date("YmdHis");
+    }
+
     //获取箱子
     public static function getBoxes($order)
     {

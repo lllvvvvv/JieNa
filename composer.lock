@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2f5320e37fccb0890f236055b9c7b0af",
+    "content-hash": "4323d99b9b885f0ac24314d10e52498b",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -57,6 +57,42 @@
             "description": "BaconQrCode is a QR code generator for PHP.",
             "homepage": "https://github.com/Bacon/BaconQrCode",
             "time": "2017-10-17T09:59:25+00:00"
+        },
+        {
+            "name": "cisco/laravel-aliyunsms",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wangfeiCode/aliyun-sms.git",
+                "reference": "6f117346f025c00c3adec4efd7899063c0ab1e42"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wangfeiCode/aliyun-sms/zipball/6f117346f025c00c3adec4efd7899063c0ab1e42",
+                "reference": "6f117346f025c00c3adec4efd7899063c0ab1e42",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Cisco\\Aliyunsms\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Cisco",
+                    "email": "iamwangfei@126.com"
+                }
+            ],
+            "description": "package for aliyun sms , used for laravel,用于laravel的阿里云短信包【非阿里大鱼】，基于2018-07-31下载的官方SDK",
+            "time": "2019-09-12T14:43:56+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -6011,7 +6047,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "cisco/laravel-aliyunsms": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

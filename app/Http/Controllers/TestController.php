@@ -9,6 +9,7 @@ use App\OrdersFlow;
 use App\Services\AlipayService;
 use App\Services\BoxService;
 use App\Services\PriceService;
+use App\Services\SmsService;
 use App\Unit;
 use App\User;
 use Illuminate\Http\Request;
@@ -38,7 +39,7 @@ class TestController extends Controller
 
 //        $flow_id = OrdersFlow::where('billno',$order)->where('type',1)->first()->flow_id;
 //        $notify = json_decode(Notify::where('flow_id',$flow_id)->first()->content);
-
+            SmsService::sendSMS(18168716226,['orderType'=>'搬家']);
     }
 
 }

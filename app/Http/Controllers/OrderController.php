@@ -11,6 +11,7 @@ use App\OrdersFlow;
 use App\Services\AlipayService;
 use App\Services\BoxService;
 use App\Services\PriceService;
+use App\Services\SmsService;
 use App\Unit;
 use App\User;
 use Cassandra\Date;
@@ -34,7 +35,7 @@ class OrderController extends Controller
             return response()->json(['code'=>'500','message'=>'箱体参数不全']);
         }
         $unit = Unit::where('name','=',$request->unitName)->first();
-        $unitId = $unit ? $unit->id : 1;            //如果没这个小区,从公司配送，老板让这么干的!
+        $unitId = $unit ? $unit->id : 1;            //如果没这个小区,从公司配送，老板让这么干的
         $user_id = $request->user()->id;
         $boxes = new BoxService();
         $enough = $boxes->BoxCount( $unitId,$request->boxes);
@@ -48,10 +49,9 @@ class OrderController extends Controller
             'arrive_time'=>$request->arriveTime,
             'unit_id'=>$unitId,
             'boxes'=>collect($request->boxes)->toJson()]);
-
-
         $freeze = new AlipayService();
         $result = $freeze->freeze($order->billno);
+        SmsService::sendSMS(17798521228,['orderType'=>'租箱']);
         return response()->json(['code'=>200,'message'=>'下单成功','ali'=>$result,'id'=>$order->id,'unitId'=>$unitId]);
     }
 
@@ -192,6 +192,7 @@ class OrderController extends Controller
         {
             $order->update(['status'=>8]);
         }
+        SmsService::sendSMS(17798521228,['orderType'=>'买箱']);
         return response()->json(['code'=>200,'message'=>'箱子交易成功']);
 
     }

@@ -175,7 +175,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
-        Cisco\Aliyunsms\AliyunsmsServiceProvider::class,
+        Mrgoon\AliSms\ServiceProvider::class,
 
     ],
 
@@ -228,7 +228,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
-        'Aliyunsms' => Cisco\Alinyunsms\Facades\Aliyunsms::class,
+        'AliSms'=>Mrgoon\AliSms\ServiceProvider::class,//阿里云短信
     ],
 
 ];

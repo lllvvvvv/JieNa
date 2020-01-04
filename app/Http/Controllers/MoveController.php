@@ -7,6 +7,7 @@ use App\Http\Requests\NewMoveOrderRequest;
 use App\MoveOrders;
 use App\OrdersFlow;
 use App\Services\AlipayService;
+use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Mockery\VerificationDirector;
 
@@ -37,6 +38,7 @@ class MoveController extends Controller
     {
         $this->validate($request,['moveOrder' => 'required']);
         $moveOrder = MoveOrders::where('moveno','=',$request->moveOrder)->first()->update(['order_type'=>2]);
+        SmsService::sendSMS(17798521228,['orderType'=>'搬家']);
         return response()->json(['code' => 200,'message' => '状态更新成功']);
     }
 

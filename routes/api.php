@@ -94,4 +94,8 @@ Route::group(['middleware' => 'auth:api','prefix' => 'back'],function (){
     Route::get('getAllMoveOrders','MoveController@getAllMoveOrders');
     //获取所有买箱订单
     Route::get('getAll1BoxOrders','BoxController@getAllBoxOrders');
+    //管理员注册
+    Route::post('register','AdminController@register');
+    //管理员登陆
+    Route::post('login','AdminController@login');
 });

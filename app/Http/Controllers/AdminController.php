@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Admin;
 use App\Helpers\Helpers;
 use App\Notify;
 use App\Order;
@@ -97,5 +98,36 @@ class AdminController extends Controller
         return response()->json(['code'=>200,'message'=>'还箱完成','result'=>$result]);
     }
 
+    public function register(Request $request)
+    {
+        $this->validate($request,['name' => 'required',
+            'password' => 'required',
+            'unitId' => 'required',
+            ]);
+        $uniqid = md5(uniqid(microtime(true),true));
+        $token = substr($uniqid,0,30);
+        $password = password_hash($request->password,PASSWORD_BCRYPT);
+        $admin = Admin::create(['admin_type' => 1,
+            'unit_id' => $request->unitId,
+            'api_token' =>$token,
+            'password' => $password,
+            'name' => $request->name]);
+        return response()->json(['code' => 200,'message' => '管理员注册成功']);
+    }
 
+    public function login(Request $request)
+    {
+        $this->validate($request,['name'=>'required',
+            'password'=>'required']);
+        $admin = Admin::where('name','=',$request->name)->first();
+        $result = password_verify($request->password,$admin->password);
+        if ($result)
+        {
+            return response(['code' => 200,'token' => $admin->api_token]);
+        }
+        else
+        {
+            return response(['code' => 422,'message' => '密码错误']);
+        }
+    }
 }

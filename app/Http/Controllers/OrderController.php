@@ -6,6 +6,7 @@ use App\Box;
 use App\Helpers\Helpers;
 use App\Http\Requests\BuyBoxRequest;
 use App\Http\Requests\NewOrderRequest;
+use App\Notify;
 use App\Order;
 use App\OrdersFlow;
 use App\Services\AlipayService;
@@ -35,7 +36,7 @@ class OrderController extends Controller
             return response()->json(['code'=>'500','message'=>'箱体参数不全']);
         }
         $unit = Unit::where('name','=',$request->unitName)->first();
-        $unitId = $unit ? $unit->id : 1;            //如果没这个小区,从公司配送，老板让这么干的
+        $unitId = $unit ? $unit->id : 1;            //如果没这个小区,从公司配送
         $user_id = $request->user()->id;
         $boxes = new BoxService();
         $enough = $boxes->BoxCount( $unitId,$request->boxes);
@@ -51,12 +52,12 @@ class OrderController extends Controller
             'boxes'=>collect($request->boxes)->toJson()]);
         $freeze = new AlipayService();
         $result = $freeze->freeze($order->billno);
-        SmsService::sendSMS(17798521228,['orderType'=>'租箱']);
         return response()->json(['code'=>200,'message'=>'下单成功','ali'=>$result,'id'=>$order->id,'unitId'=>$unitId]);
     }
 
     public function distributionBox(Request $request)
     {
+        SmsService::sendSMS(17798521228,['orderType'=>'租箱']);
         $boxes = new BoxService();
         Order::where('id',$request->id)->update(['freeze'=>1]);
         $enough = $boxes->BoxCount($request->unitId,$request->boxes);
@@ -154,7 +155,8 @@ class OrderController extends Controller
     public function uploadAddress(Request $request)
     {
         $this->validate($request, [
-            'orderId' => 'address'
+            'orderId' => 'required',
+            'address' => 'required',
         ]);
         $order = Order::where('billno','=',$request->orderId)->update(['home_address'=>$request->address,'status'=>4]);
         return response()->json([
@@ -190,6 +192,11 @@ class OrderController extends Controller
         }
         if ($order->Boxes()->where('status',1)->count()==0)
         {
+            //解冻订单
+            $flow_id = OrdersFlow::where('billno',$order->billno)->where('type',1)->first()->flow_id;
+            $notify = json_decode(Notify::where('flow_id',$flow_id)->first()->content);
+            $unfreeze = new AlipayService();
+            $unfreeze->unfreeze($order->billno,$notify);
             $order->update(['status'=>8]);
         }
         SmsService::sendSMS(17798521228,['orderType'=>'买箱']);

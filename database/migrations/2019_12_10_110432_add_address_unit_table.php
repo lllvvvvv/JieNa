@@ -14,7 +14,7 @@ class AddAddressUnitTable extends Migration
     public function up()
     {
         Schema::table('units', function (Blueprint $table) {
-            $table->boolean('address')->default(false);
+            $table->char('address')->default(false);
         });
     }
 

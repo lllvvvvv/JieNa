@@ -39,7 +39,10 @@ class TestController extends Controller
 
 //        $flow_id = OrdersFlow::where('billno',$order)->where('type',1)->first()->flow_id;
 //        $notify = json_decode(Notify::where('flow_id',$flow_id)->first()->content);
-            SmsService::sendSMS(18168716226,['orderType'=>'搬家']);
+        if (Order::where('publicity_id',1)->first() == null)
+        {
+            dd('adsfasdf');
+        }
     }
 
 }

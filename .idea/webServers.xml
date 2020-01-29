@@ -10,12 +10,12 @@
           <option name="port" value="22" />
         </fileTransfer>
       </webServer>
-      <webServer id="990739f5-b6bf-4c55-a5ba-455f3b3618b4" name="正式线上" url="http://47.103.79.130">
-        <fileTransfer host="47.103.79.130" port="21">
+      <webServer id="79fe1abe-3050-4676-bf1f-931e919544f0" name="正式线上" url="http://47.103.79.130">
+        <fileTransfer host="47.103.79.130" port="22" rootFolder="/www/wwwroot/jiena/jiena" accessType="SFTP">
           <advancedOptions>
-            <advancedOptions dataProtectionLevel="Private" shareSSLContext="true" />
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
-          <option name="port" value="21" />
+          <option name="port" value="22" />
         </fileTransfer>
       </webServer>
     </option>

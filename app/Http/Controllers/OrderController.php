@@ -31,6 +31,7 @@ class OrderController extends Controller
 
     public function newOrder(NewOrderRequest $request)
     {
+        $publicity_id = null;
         if ($request->boxes==null)
         {
             return response()->json(['code'=>'500','message'=>'箱体参数不全']);
@@ -44,11 +45,17 @@ class OrderController extends Controller
         {
             return response()->json(['code'=>'JN001','message'=>'下单失败箱子不够']);
         }
+         $user = User::where('id',$user_id)->first();
+        if ($user->publicity_id != null && Order::where('user_id',$user_id)->first()==null)
+        {
+            $publicity_id = $user->publicity_id;
+        }
         $order = Order::create(['user_id'=>$user_id,'billno'=>Helpers::generateBillNo(),
             'status'=>$request->status,
             'arrive_address'=>$request->arriveAddress,
             'arrive_time'=>$request->arriveTime,
             'unit_id'=>$unitId,
+            'publicity_id' => $publicity_id,
             'boxes'=>collect($request->boxes)->toJson()]);
         $freeze = new AlipayService();
         $result = $freeze->freeze($order->billno);
@@ -128,6 +135,9 @@ class OrderController extends Controller
             $this->price = $price->getPrice($order->billno) * $hour;
             $order->boxes = $boxes;
             $order->price = $this->price;
+            $user = User::where('id',$order->user_id)->first();
+            $order->name = $user->name;
+            $order->phone = $user->phone;
             return $order;
         });
 //        DB::table('orders')->where('billno',$request->billNo)->update(['price'=>$this->price]);

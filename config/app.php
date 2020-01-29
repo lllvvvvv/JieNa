@@ -177,7 +177,7 @@ return [
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         Mrgoon\AliSms\ServiceProvider::class,
         Prettus\Repository\Providers\RepositoryServiceProvider::class,
-
+        App\Providers\RepositoryServiceProvider::class,
     ],
 
     /*

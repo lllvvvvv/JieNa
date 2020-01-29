@@ -23,6 +23,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
+
 Route::group(['middleware' => 'auth:api'],function (){
     //新建订单
     Route::post('newOrder','OrderController@newOrder');
@@ -34,20 +36,13 @@ Route::group(['middleware' => 'auth:api'],function (){
     Route::get('getUnits','UnitController@getUnits');
     //通知管理员上门
     Route::post('uploadAddress','OrderController@uploadAddress');
-    //获取上门订单列表
-    Route::get('deliveryList','AdminController@deliveryList');
-    //用户拿到箱子，开始计时
-    Route::get('timingBegins','AdminController@timingBegins');
-    //获取回收订单列表
-    Route::get('retrieveList','AdminController@retrieveList');
     //小区列表
     Route::get('unitList','UnitController@unitList');
     //批量添加箱体
     Route::post('addBoxes','BoxController@addBoxes');
 //    //完成订单
 //    Route::post('finishOrder','OrderController@finishOrder');
-    //管理员还箱
-    Route::post('confirmReceipt','AdminController@confirmReceipt');
+
     //用户买箱
     Route::post('buyBox','OrderController@buyBox');
 
@@ -67,6 +62,9 @@ Route::group(['middleware' => 'auth:api'],function (){
     Route::get('verifyMovePay','MoveController@verifyMovePay');
     //获取所有搬家订单
     Route::get('getMoveOrder','MoveController@getMoveOrder');
+    //测试repository
+    Route::get('repository','PublicityController@test');
+
 });
 
 //手动解冻
@@ -76,26 +74,45 @@ Route::group(['middleware' => 'auth:api'],function (){
 Route::post('getUserPhone','AlipayController@getUserPhone');
 Route::post('notify','AlipayController@notify');
 Route::get('freeze','AlipayController@freeze');
+//管理员注册
+Route::post('register','AdminController@register');
+//管理员登陆
+Route::post('adminLogin','AdminController@login');
+//为推广人员生成专属二维码
+Route::post('publicityQrCode','PublicityController@publicityQrCode');
 
 //支付宝接口
 Route::get('AliUserToken','AlipayController@userInfo')->name('AliToken');
 //获取用户手机号
+Route::post('getUserPhone','AlipayController@getUserPhone');
 //资金冻结
 Route::get('freeze','AlipayController@freeze');
 
 Route::post('/test','TestController@test');
 
-
 //后台接口
-Route::group(['middleware' => 'auth:api','prefix' => 'back'],function (){
-    //获得所有租箱订单
+Route::group(['middleware' => 'auth:admin','prefix' => 'back'],function (){
+    //获取上门订单列表
+    Route::get('deliveryList','AdminController@deliveryList');
+    //获取回收订单列表
+    Route::get('retrieveList','AdminController@retrieveList');
+    //用户拿到箱子，开始计时
+    Route::get('timingBegins','AdminController@timingBegins');
+    //获得所有租箱订
     Route::get('getAllOrders','OrderController@getAllOrders');
+    //订单查询
+    Route::post('queryOrder','OrderController@queryOrder');
     //获得所有搬家订单
     Route::get('getAllMoveOrders','MoveController@getAllMoveOrders');
+    //管理员还箱
+    Route::post('confirmReceipt','AdminController@confirmReceipt');
     //获取所有买箱订单
     Route::get('getAll1BoxOrders','BoxController@getAllBoxOrders');
-    //管理员注册
-    Route::post('register','AdminController@register');
-    //管理员登陆
-    Route::post('login','AdminController@login');
+    //获取版本号
+    Route::get('/getAppVersion','AlipayController@getVersion');
+    //管理员获取自己对送箱订单
+    Route::get('/getSendBoxList','AdminController@SendBoxList');
+
+
+
 });

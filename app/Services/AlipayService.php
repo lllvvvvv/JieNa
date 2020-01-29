@@ -177,4 +177,16 @@ class AlipayService
 
     }
 
+    public function createQcCode($id,$phone,$name)
+    {
+        $request = new \AlipayOpenAppQrcodeCreateRequest();
+        $request->setBizContent("{" .
+            "\"url_param\":\"pages/getStorageBox/getStorageBox\"," .
+            "\"query_param\":\"id=$id\"," .
+            "\"describe\":\"推广人员手机号\"" .
+            "  }");
+        $result =  $this->c->execute ( $request);
+        return $result;
+    }
+
 }

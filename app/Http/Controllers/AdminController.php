@@ -7,9 +7,11 @@ use App\Helpers\Helpers;
 use App\Notify;
 use App\Order;
 use App\OrdersFlow;
+use App\Repositories\AdminRepository;
 use App\Services\AlipayService;
 use App\Services\BoxService;
 use App\Services\PriceService;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,18 +19,31 @@ use Yansongda\Pay\Log;
 
 class AdminController extends Controller
 {
+    /**
+     * @var AdminRepository
+     */
+    protected $repository;
     //送货上门订单列表
+
+    public function __construct(AdminRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
     public function  deliveryList(Request $request)
     {
-        $unit_id = $user = $request->user()->Admin()->first()->unit_id;
-        $orders = DB::table('orders')->where('unit_id',$unit_id)->where('status',1)->get();
+        $unit_id = $user = $request->user('admin')->unit_id;
+        $orders = DB::table('orders')->where('unit_id',$unit_id)->where('status',1)->where('freeze',1)->get();
         $result = $orders->map(function ($order){
+            $user = User::where('id',$order->user_id)->first();
             $boxes = new BoxService();
             $boxes = $boxes->Boxes($order->id);
             return ['billno'=>$order->billno,
                 'arrive_time'=>$order->arrive_time,
                 'arrive_address'=>$order->arrive_address,
-                'boxes' =>$boxes
+                'boxes' =>$boxes,
+                'phone' => $user->phone,
+                'name' => $user->name,
             ];
         });
         return response()->json(['data'=>$result]);
@@ -37,14 +52,17 @@ class AdminController extends Controller
     //上门回收箱子列表
     public function retrieveList(Request $request)
     {
-        $unit_id = $user = $request->user()->Admin()->first()->unit_id;
+        $unit_id = $user = $request->user()->unit_id;
         $orders = DB::table('orders')->where('unit_id',$unit_id)->where('status',4)->get();
         $result = $orders->map(function ($order){
+            $user = User::where('id',$order->user_id)->first();
             $boxes = new BoxService();
             $boxes = $boxes->Boxes($order->id);
             return ['billno'=>$order->billno,
                 'home_address'=>$order->home_address,
-                'boxes' =>$boxes
+                'boxes' =>$boxes,
+                'phone' => $user->phone,
+                'name' => $user->name,
             ];
         });
         return response()->json(['data'=>$result]);
@@ -56,9 +74,10 @@ class AdminController extends Controller
         $this->validate($request,[
            'orderId' => 'required',
         ]);
-        $admin_id = $request->user()->Admin()->first()->id;
+        $admin_id = $request->user()->id;
         $order = Order::where('billno',$request->orderId)->update(['status'=>3,
             'admin_id'=>$admin_id,
+            'first_admin' => $admin_id,
             'get_time'=>now()]);
         return response()->json(['code'=>200,'message'=>'开始计时']);
     }
@@ -71,7 +90,7 @@ class AdminController extends Controller
         $this->validate($request, [
             'orderId' => 'required'
         ]);
-        $user = $request->user()->Admin()->first();
+        $user = $request->user();
         $order = Order::where('billno',$request->orderId);
         $order->update(['admin_id' => $user->id,'status'=>5,'pay_time'=>Carbon::now()]);
         $order = $order->first();
@@ -120,6 +139,10 @@ class AdminController extends Controller
         $this->validate($request,['name'=>'required',
             'password'=>'required']);
         $admin = Admin::where('name','=',$request->name)->first();
+        if ($admin == null)
+        {
+            return response()->json(['code' => 422,'message' => '用户名错误']);
+        }
         $result = password_verify($request->password,$admin->password);
         if ($result)
         {
@@ -129,5 +152,16 @@ class AdminController extends Controller
         {
             return response(['code' => 422,'message' => '密码错误']);
         }
+    }
+
+    public function auth(Request $request)
+    {
+        return response('asrfasdf');
+    }
+
+    public function test(Request $request)
+    {
+        $admin = $this->repository->all();
+        return response()->json([$admin]);
     }
 }

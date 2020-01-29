@@ -17,11 +17,7 @@ class AlipayController extends Controller
 
     public function userInfo(Request $request)
     {
-        $this->validate($request, [
-           'code' => 'required',
-           'phone'=> 'required',
-           'uid' => 'required'
-        ]);
+
         $info = new AlipayService();
         $info = $info->aliUserInfo($request->code,$request->phone,$request->uid);
         return response()->json($info);
@@ -29,14 +25,12 @@ class AlipayController extends Controller
 
     public function getUserPhone(Request $request)
     {
-        $this->validate($request, [
-           'res' => 'required'
-        ]);
         $pay = new AlipayService();
         $phone = $pay->decryptData($request->res);
         $phone = json_decode($phone)->mobile;
         if (User::where('phone',$phone)->first()!= null)
         {
+            $user = User::where('phone',$phone)->update(['name'=>$request->name]);
             $user = User::where('phone',$phone)->first();
             return response()->json(['code'=>200,'data'=>$user]);
         }
@@ -46,6 +40,8 @@ class AlipayController extends Controller
         $user = new User;
         $user->phone = $phone;
         $user->api_token = $token;
+        $user->name = $request->name;
+        $user->publicity_id = $request->publicity_id;
         $user->save();
 
         return response()->json(['code'=>200,'data'=>$user]);
@@ -77,6 +73,12 @@ class AlipayController extends Controller
             return 'success';
         }
     }
+
+    public function getVersion(Request $request)
+    {
+        return response()->json(['version' => '0.0.1']);
+    }
+
 
 
 }

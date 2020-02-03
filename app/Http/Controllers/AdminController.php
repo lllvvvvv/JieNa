@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Admin;
+use App\Criteria\MyCriteria;
 use App\Helpers\Helpers;
 use App\Notify;
 use App\Order;
@@ -164,4 +165,6 @@ class AdminController extends Controller
         $admin = $this->repository->all();
         return response()->json([$admin]);
     }
+
+
 }

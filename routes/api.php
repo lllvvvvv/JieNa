@@ -110,8 +110,10 @@ Route::group(['middleware' => 'auth:admin','prefix' => 'back'],function (){
     Route::get('getAll1BoxOrders','BoxController@getAllBoxOrders');
     //获取版本号
     Route::get('/getAppVersion','AlipayController@getVersion');
-    //管理员获取自己对送箱订单
-    Route::get('/getSendBoxList','AdminController@SendBoxList');
+    //管理员获取取箱订单
+    Route::get('/getBoxOrderList','OrderController@getBoxOrderList');
+    //管理员获取回收订单
+    Route::get('backBoxOrderList','OrderController@backBoxOrderList');
 
 
 

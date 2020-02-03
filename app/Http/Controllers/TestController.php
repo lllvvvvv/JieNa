@@ -39,10 +39,9 @@ class TestController extends Controller
 
 //        $flow_id = OrdersFlow::where('billno',$order)->where('type',1)->first()->flow_id;
 //        $notify = json_decode(Notify::where('flow_id',$flow_id)->first()->content);
-        if (Order::where('publicity_id',1)->first() == null)
-        {
-            dd('adsfasdf');
-        }
+            $test = Order::find(2);
+            return $test->get_status;
+//            return Order::$getStatusMap[$test->get_status];
     }
 
 }

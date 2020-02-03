@@ -9,6 +9,7 @@ use App\Http\Requests\NewOrderRequest;
 use App\Notify;
 use App\Order;
 use App\OrdersFlow;
+use App\Repositories\OrderRepository;
 use App\Services\AlipayService;
 use App\Services\BoxService;
 use App\Services\PriceService;
@@ -28,6 +29,12 @@ use function Symfony\Component\Console\Tests\Command\createClosure;
 class OrderController extends Controller
 {
     //order状态  1:送货上门 2:自提 3:已提未支付 4:待上门回收 5:支付完成 6:废订单
+    protected $orderRepository;
+
+    public function __construct(OrderRepository $repository)
+    {
+        $this->orderRepository = $repository;
+    }
 
     public function newOrder(NewOrderRequest $request)
     {
@@ -226,6 +233,24 @@ class OrderController extends Controller
     {
         $order = Order::all();
         return response()->json(['code'=>200,'orders' => $order]);
+    }
+
+    public function getBoxOrderList(Request $request)
+    {
+        $user = $request->user();
+        $orders = $this->orderRepository->findWhere([
+            'first_admin' => $user->id,'get_status' => $request->get_status
+        ]);
+        return response()->json(['code'=>200,'orders' => $orders]);
+    }
+
+    public function backBoxOrderList(Request $request)
+    {
+        $user = $request->user();
+        $orders = $this->orderRepository->findWhere([
+            'admin_id' => $user->id,'back_status' => $request->back_status
+        ]);
+        return response()->json(['code'=>200,'orders' => $orders]);
     }
 
 }

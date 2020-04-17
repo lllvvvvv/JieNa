@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\HousekeepRepository;
+use App\Repositories\HousekeepRepositoryEloquent;
 use App\Repositories\OrderRepository;
 use App\Repositories\OrderRepositoryEloquent;
 use App\Repositories\PublicityRepository;
@@ -31,5 +33,6 @@ class RepositoryServiceProvider extends ServiceProvider
         //:end-bindings:
         $this->app->bind(PublicityRepository::class,PublicityRepositoryEloquent::class);
         $this->app->bind(OrderRepository::class,OrderRepositoryEloquent::class);
+        $this->app->bind(HousekeepRepository::class,HousekeepRepositoryEloquent::class);
     }
 }

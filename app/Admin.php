@@ -20,4 +20,9 @@ class Admin extends Model
     {
         return $this->primaryKey;
     }
+
+    public function Unit()
+    {
+        return $this->belongsTo('App\Unit');
+    }
 }

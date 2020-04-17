@@ -93,7 +93,8 @@ class AdminController extends Controller
         ]);
         $user = $request->user();
         $order = Order::where('billno',$request->orderId);
-        $order->update(['admin_id' => $user->id,'status'=>5,'pay_time'=>Carbon::now()]);
+        $order->first()->home_address ? $back_status = 2 : $back_status = 1;
+        $order->update(['admin_id' => $user->id,'status'=>5,'pay_time'=>Carbon::now(),'back_status' => $back_status]);
         $order = $order->first();
         $flow_id = OrdersFlow::where('billno',$order->billno)->where('type',1)->first()->flow_id;
         $notify = json_decode(Notify::where('flow_id',$flow_id)->first()->content);
@@ -147,7 +148,7 @@ class AdminController extends Controller
         $result = password_verify($request->password,$admin->password);
         if ($result)
         {
-            return response(['code' => 200,'token' => $admin->api_token]);
+            return response(['code' => 200,'token' => $admin->api_token,'admin_type' => $admin->admin_type]);
         }
         else
         {
@@ -164,6 +165,11 @@ class AdminController extends Controller
     {
         $admin = $this->repository->all();
         return response()->json([$admin]);
+    }
+
+    public function undoneList(Request $request)
+    {
+
     }
 
 

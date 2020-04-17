@@ -168,7 +168,7 @@ class AlipayService
         $s="{" .
             "\"out_trade_no\":\"$flow->flow_id\"," .
             "\"total_amount\":$price," .
-            "\"subject\":\"鲸亿盒子搬家预约\"," .
+            "\"subject\":\"鲸亿服务预约\"," .
             "\"buyer_id\":\"$ali_uid\"" .
             "  }";
         $request->setBizContent($s);
@@ -176,6 +176,10 @@ class AlipayService
         return $result;
 
     }
+
+
+
+
 
     public function createQcCode($id,$phone,$name)
     {

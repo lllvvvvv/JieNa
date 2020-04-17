@@ -17,8 +17,8 @@ class CreateHousekeepsTable extends Migration
             $table->integer('service_type');//服务类型  例子（保洁，清洗）
             $table->integer('specific_type');//具体类型 例子（保洁：开荒保洁，小时保洁）
             $table->integer('price'); //价格
-            $table->string('home_address'); //家庭住址
-            $table->timestamp('arrive_time'); //预定时间
+            $table->string('detailed_address'); //家庭住址
+            $table->timestamp('appointment'); //预定时间
             $table->timestamp('pay_time')->nullable(); //支付时间
             $table->integer('unit_id');
             $table->timestamps();

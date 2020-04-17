@@ -35,6 +35,11 @@ class Helpers{
         return 'MOVE' . date("YmdHis");
     }
 
+    public static function generateNO($type)
+    {
+        return $type . date("YmdHis");
+    }
+
     //获取箱子
     public static function getBoxes($order)
     {
@@ -46,6 +51,8 @@ class Helpers{
         }
         return $result;
     }
+
+
 
 
 }

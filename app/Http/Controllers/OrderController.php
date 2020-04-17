@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Admin;
 use App\Box;
 use App\Helpers\Helpers;
 use App\Http\Requests\BuyBoxRequest;
@@ -61,6 +62,7 @@ class OrderController extends Controller
             'status'=>$request->status,
             'arrive_address'=>$request->arriveAddress,
             'arrive_time'=>$request->arriveTime,
+            'get_status'=>$request->status,
             'unit_id'=>$unitId,
             'publicity_id' => $publicity_id,
             'boxes'=>collect($request->boxes)->toJson()]);
@@ -238,19 +240,57 @@ class OrderController extends Controller
     public function getBoxOrderList(Request $request)
     {
         $user = $request->user();
+        if ($request->get_status)
+        {
         $orders = $this->orderRepository->findWhere([
             'first_admin' => $user->id,'get_status' => $request->get_status
         ]);
+        }
+        else
+        {
+            $orders = $this->orderRepository->findWhere([
+                'first_admin' => $user->id
+            ]);
+        }
+        $orders->map(function ($order){
+            $order['unit_name'] = $order->Unit->name;
+            $order['boxes'] = json_decode($order['boxes']);
+            array_except($order,'Unit');
+        });
         return response()->json(['code'=>200,'orders' => $orders]);
     }
 
     public function backBoxOrderList(Request $request)
     {
         $user = $request->user();
-        $orders = $this->orderRepository->findWhere([
-            'admin_id' => $user->id,'back_status' => $request->back_status
-        ]);
+        if ($request->back_status) {
+            $orders = $this->orderRepository->findWhere([
+                'admin_id' => $user->id, 'back_status' => $request->back_status
+            ]);
+        }
+        else
+        {
+            $orders = $this->orderRepository->findWhere([
+                'admin_id' => $user->id
+            ]);
+        }
+        $orders->map(function ($order){
+            $unit = Admin::where('id',$order->admin_id)->with(['Unit'])->first();
+            $order['recycle_point'] = $unit['Unit']['name'];
+            $order['boxes'] = json_decode($order['boxes']);
+        });
         return response()->json(['code'=>200,'orders' => $orders]);
+    }
+
+    public function historyList(Request $request)
+    {
+        $request->begin ? $begin = $request->begin : $begin = 0;
+        $request->end ? $end = $request->end : $end = now();
+        $list = Order::time(0,$end)->get()->map(function ($order){
+            $order['boxes']=json_decode($order['boxes']);
+            return $order;
+        })->paginate(5)->toArray();
+        return response()->json(['code'=>200,'data' => $list]);
     }
 
 }

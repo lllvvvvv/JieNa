@@ -20,6 +20,11 @@ class Housekeep extends Model implements Transformable
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = ['id','price','billno','service_type','specific_type','detailed_address','appointment','pay_time','unit_id'
+    ,'order_status','user_id'];
 
+    public function Unit()
+    {
+        return $this->belongsTo('App\Unit','unit_id','id');
+    }
 }

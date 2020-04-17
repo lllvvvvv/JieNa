@@ -22,4 +22,8 @@ class Order extends Model implements Transformable
      */
     protected $fillable = [];
 
+    public function Unit()
+    {
+        return $this->belongsTo('App\Unit','unit_id','id');
+    }
 }

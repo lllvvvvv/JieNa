@@ -65,6 +65,14 @@ Route::group(['middleware' => 'auth:api'],function (){
     //测试repository
     Route::get('repository','PublicityController@test');
 
+    Route::post('newHouseKeepOrder','HouseKeepsController@create');
+
+    Route::post('houseKeepVerfiyPay','HouseKeepsController@VerifyPay');
+
+
+
+    Route::get('getHouseKeep','HouseKeepsController@hkList');
+
 });
 
 //手动解冻
@@ -114,7 +122,15 @@ Route::group(['middleware' => 'auth:admin','prefix' => 'back'],function (){
     Route::get('/getBoxOrderList','OrderController@getBoxOrderList');
     //管理员获取回收订单
     Route::get('backBoxOrderList','OrderController@backBoxOrderList');
+    //历史搬家订单
+    Route::get('moveHistoryOrderList','MoveController@historyList');
+    //历史租箱订单
+    Route::get('boxHistoryOrderList','OrderController@historyList');
+    //历史保洁订单
+//    Route::get('houseKeepHistoryOrderList','Hou');
+    //未完成订单
+    Route::get('undoneOrderList','AdminController@undoneList');
 
-
+    Route::get('houseKeepList','HouseKeepsController@index');//所有家政订单
 
 });

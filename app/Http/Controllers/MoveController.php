@@ -54,4 +54,13 @@ class MoveController extends Controller
         $moveOrders = MoveOrders::all();
         return response()->json(['code'=>200,'moveOrders' => $moveOrders]);
     }
+
+    public function historyList(Request $request)
+    {
+        $request->begin ? $begin = $request->begin : $begin = 0;
+        $request->end ? $end = $request->end : $end = now();
+        $list = MoveOrders::time($begin,$end);
+        return response()->json(['code'=>200,'data'=> $list]);
+    }
+
 }
